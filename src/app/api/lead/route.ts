@@ -112,7 +112,14 @@ async function notifyTelegram(data: Record<string, unknown>) {
   const chatId = process.env.TELEGRAM_CHAT_ID;
   const topicId = process.env.TELEGRAM_TOPIC_ID; // ID топика для заявок
   
-  console.log('Telegram notification attempt:', { botToken: !!botToken, chatId, topicId });
+  console.log('=== TELEGRAM NOTIFICATION START ===');
+  console.log('Telegram notification attempt:', { 
+    botToken: !!botToken, 
+    chatId, 
+    topicId,
+    topicIdType: typeof topicId,
+    topicIdParsed: topicId ? parseInt(topicId) : null
+  });
   
   if (!botToken || !chatId) {
     console.error('Telegram credentials not configured');
@@ -160,6 +167,7 @@ async function notifyTelegram(data: Record<string, unknown>) {
   } catch (error) {
     console.error('Telegram notification error:', error);
   }
+  console.log('=== TELEGRAM NOTIFICATION END ===');
 }
 
 async function copyToGoogleSheet(data: Record<string, unknown>) {
@@ -229,6 +237,12 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     console.log('Received data:', JSON.stringify(body, null, 2));
+    console.log('Environment check:', {
+      hasBotToken: !!process.env.TELEGRAM_BOT_TOKEN,
+      hasChatId: !!process.env.TELEGRAM_CHAT_ID,
+      hasTopicId: !!process.env.TELEGRAM_TOPIC_ID,
+      topicIdValue: process.env.TELEGRAM_TOPIC_ID
+    });
     
     // Validate city
     if (!RU_CITIES.includes(body.city)) {
