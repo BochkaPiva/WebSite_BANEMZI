@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Reveal from './Reveal';
 
 export default function Footer() {
@@ -8,6 +8,20 @@ export default function Footer() {
   const [showConsent, setShowConsent] = useState(false);
   const [showCookies, setShowCookies] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+
+  // Block body scroll when any modal is open
+  useEffect(() => {
+    if (showPolicy || showConsent || showCookies || showTerms) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showPolicy, showConsent, showCookies, showTerms]);
 
   const contacts = [
     {
@@ -67,7 +81,7 @@ export default function Footer() {
   ];
 
   const PolicyModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
       <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Политика конфиденциальности</h3>
@@ -211,7 +225,7 @@ export default function Footer() {
   );
 
   const ConsentModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
       <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Согласие на обработку персональных данных</h3>
@@ -246,7 +260,7 @@ export default function Footer() {
   );
 
   const CookiesModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
       <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Правила обработки cookie</h3>
@@ -309,7 +323,7 @@ export default function Footer() {
   );
 
   const TermsModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
       <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Пользовательское соглашение</h3>
