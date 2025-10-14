@@ -28,9 +28,9 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/Logo.png', type: 'image/png' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     shortcut: [{ url: '/Logo.png', type: 'image/png' }],
+    apple: [{ url: '/Logo.png', type: 'image/png' }],
   },
 };
 
