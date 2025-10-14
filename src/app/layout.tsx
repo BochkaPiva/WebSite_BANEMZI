@@ -48,7 +48,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/Logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/Logo.png" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ? (
           <Script
             strategy="afterInteractive"

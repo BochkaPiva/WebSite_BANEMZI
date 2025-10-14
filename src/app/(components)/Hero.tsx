@@ -25,7 +25,7 @@ export default function Hero() {
               minHeight: '100vh !important', 
               objectPosition: 'center bottom',
               pointerEvents: 'none',
-              zIndex: 1
+              zIndex: -1
             }}
           />
           {/* Накладываем невидимый слой поверх видео для блокировки контролов */}
@@ -40,8 +40,8 @@ export default function Hero() {
         </div>
       </ParallaxElement>
       {/* Затемнение для читаемости */}
-      <div className="absolute inset-0 bg-black/45" style={{ zIndex: 2 }} />
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-6 relative" style={{ zIndex: 3 }}>
+      <div className="absolute inset-0 -z-10 bg-black/45" />
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-6">
         {/* Интерактивный логотип с параллаксом и скролл-анимацией */}
         <ParallaxElement speed={0.3} direction="up" className="flex justify-center mb-6 sm:mb-8 -mt-10">
           <motion.div
