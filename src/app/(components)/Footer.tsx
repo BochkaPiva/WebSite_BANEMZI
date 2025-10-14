@@ -67,8 +67,8 @@ export default function Footer() {
   ];
 
   const PolicyModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Политика конфиденциальности</h3>
           <button 
@@ -80,7 +80,7 @@ export default function Footer() {
             </svg>
           </button>
         </div>
-        <div className="text-white/80 space-y-4 text-sm leading-relaxed">
+        <div className="text-white/80 space-y-4 text-sm leading-relaxed modal-content">
           <p><strong>Дата обновления:</strong> 14 октября 2025 г.</p>
           
           <h4 className="text-white font-semibold mt-6">1. Общие положения</h4>
@@ -211,8 +211,8 @@ export default function Footer() {
   );
 
   const ConsentModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Согласие на обработку персональных данных</h3>
           <button 
@@ -224,7 +224,7 @@ export default function Footer() {
             </svg>
           </button>
         </div>
-        <div className="text-white/80 space-y-4 text-sm leading-relaxed">
+        <div className="text-white/80 space-y-4 text-sm leading-relaxed modal-content">
           <p>Я, субъект персональных данных, в соответствии с Федеральным законом от 27 июля 2006 года № 152-ФЗ «О персональных данных» предоставляю согласие на обработку персональных данных, указанных мной на страницах сайта banemzi.ru в сети «Интернет», при заполнении веб-форм, характер информации которых предполагает или допускает включение в них следующих персональных данных: фамилия, имя, отчество, адрес электронной почты, номер телефона, Telegram-аккаунт, с целью получения информации о продуктах и услугах Оператора, специальных предложениях и различных событиях Оператора, хранения данных и администрирования системы.</p>
           
           <p>Согласие предоставляется на совершение следующих действий (операций) с указанными в настоящем согласии персональными данными: сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передачу (предоставление, доступ), блокирование, удаление, уничтожение, осуществляемых как с использованием средств автоматизации (автоматизированная обработка), так и без использования таких средств (неавтоматизированная обработка).</p>
@@ -246,8 +246,8 @@ export default function Footer() {
   );
 
   const CookiesModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Правила обработки cookie</h3>
           <button 
@@ -259,7 +259,7 @@ export default function Footer() {
             </svg>
           </button>
         </div>
-        <div className="text-white/80 space-y-4 text-sm leading-relaxed">
+        <div className="text-white/80 space-y-4 text-sm leading-relaxed modal-content">
           <h4 className="text-white font-semibold">1. На этом веб-сайте используются файлы cookie</h4>
           <p>Используя этот веб-сайт, Вы даете согласие на обработку файлов cookie, пользовательских данных (сведения о местоположении; тип и версия ОС; тип и версия Браузера; тип устройства и разрешение его экрана; источник откуда пользователь перешел на сайт; с какого сайта или по какой рекламе; язык ОС и Браузера; какие страницы открывает и на какие кнопки нажимает пользователь; ip-адрес) в целях функционирования сайта, проведения ретаргетинга и проведения статистических исследований и обзоров. Если Вы не хотите, чтобы Ваши данные обрабатывались, Вы должны покинуть данный сайт.</p>
           
@@ -309,8 +309,8 @@ export default function Footer() {
   );
 
   const TermsModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Пользовательское соглашение</h3>
           <button 
@@ -322,7 +322,7 @@ export default function Footer() {
             </svg>
           </button>
         </div>
-        <div className="text-white/80 space-y-4 text-sm leading-relaxed">
+        <div className="text-white/80 space-y-4 text-sm leading-relaxed modal-content">
           <h4 className="text-white font-semibold">1. Общие положения</h4>
           <p>Настоящее Пользовательское соглашение (далее — «Соглашение») регулирует отношения между пользователями сайта banemzi.ru (далее — «Сайт») и компанией BANEMZI (далее — «Компания», «мы»).</p>
           <p>Используя Сайт, вы соглашаетесь с условиями настоящего Соглашения. Если вы не согласны с какими-либо условиями, пожалуйста, не используйте Сайт.</p>

@@ -3,23 +3,37 @@
 /* Custom scrollbar styles */
 .scrollbar-thin {
   scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 .scrollbar-thin::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
   background: transparent;
+  border-radius: 6px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:active {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Ensure modal content is scrollable */
+.modal-content {
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 :root {
