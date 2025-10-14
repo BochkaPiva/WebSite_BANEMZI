@@ -17,6 +17,7 @@ export default function Hero() {
           muted
           loop
           playsInline
+          controls={false}
           poster="/hero-poster.jpg"
           style={{ height: '100vh !important', minHeight: '100vh !important', objectPosition: 'center bottom' }}
         />
