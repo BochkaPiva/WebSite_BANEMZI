@@ -1,12 +1,8 @@
 "use client";
 
-import { useState } from 'react';
 import Reveal from './Reveal';
 
 export default function Footer() {
-  const [showPolicy, setShowPolicy] = useState(false);
-  const [showConsent, setShowConsent] = useState(false);
-  const [showCookies, setShowCookies] = useState(false);
 
   const contacts = [
     {
@@ -65,122 +61,6 @@ export default function Footer() {
     }
   ];
 
-  const PolicyModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-2xl max-h-[80vh] overflow-y-auto border border-white/10">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Политика конфиденциальности</h3>
-          <button 
-            onClick={() => setShowPolicy(false)}
-            className="text-white/60 hover:text-white transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div className="text-white/80 space-y-4 text-sm">
-          <p>Мы собираем и обрабатываем ваши персональные данные в соответствии с Федеральным законом № 152-ФЗ «О персональных данных».</p>
-          <p><strong>Какие данные мы собираем:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Контактная информация (имя, телефон, email, Telegram)</li>
-            <li>Информация о мероприятии (тип, количество гостей, город)</li>
-            <li>Технические данные (IP-адрес, браузер, устройство)</li>
-          </ul>
-          <p><strong>Как используем:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Связываемся с вами для обсуждения мероприятия</li>
-            <li>Ведем учет заявок в Google Sheets</li>
-            <li>Отправляем уведомления в Telegram</li>
-          </ul>
-          <p><strong>Ваши права:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Запросить информацию о ваших данных</li>
-            <li>Потребовать исправления или удаления</li>
-            <li>Отозвать согласие на обработку</li>
-          </ul>
-          <p>По вопросам обработки персональных данных обращайтесь: info@banemzi.ru</p>
-        </div>
-      </div>
-    </div>
-  );
-
-  const ConsentModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-2xl max-h-[80vh] overflow-y-auto border border-white/10">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Согласие на обработку персональных данных</h3>
-          <button 
-            onClick={() => setShowConsent(false)}
-            className="text-white/60 hover:text-white transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div className="text-white/80 space-y-4 text-sm">
-          <p>Настоящим я даю согласие на обработку моих персональных данных в соответствии с Федеральным законом № 152-ФЗ «О персональных данных».</p>
-          <p><strong>Согласие предоставляется на:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Сбор, хранение и обработку персональных данных</li>
-            <li>Использование данных для связи и предоставления услуг</li>
-            <li>Передачу данных в Google Sheets для учета заявок</li>
-            <li>Отправку уведомлений в Telegram</li>
-          </ul>
-          <p><strong>Срок действия согласия:</strong> до отзыва согласия</p>
-          <p><strong>Способы отзыва согласия:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>По email: info@banemzi.ru</li>
-            <li>По телефону: +7 (___) ___‑__‑__</li>
-            <li>В Telegram: @banemzi</li>
-          </ul>
-          <p>Я подтверждаю, что ознакомлен с <button onClick={() => {setShowConsent(false); setShowPolicy(true);}} className="text-cyan-400 hover:text-cyan-300 underline">Политикой конфиденциальности</button> и даю согласие на обработку персональных данных.</p>
-        </div>
-      </div>
-    </div>
-  );
-
-  const CookiesModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-2xl max-h-[80vh] overflow-y-auto border border-white/10">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Правила обработки cookie</h3>
-          <button 
-            onClick={() => setShowCookies(false)}
-            className="text-white/60 hover:text-white transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div className="text-white/80 space-y-4 text-sm">
-          <p>Наш сайт использует файлы cookie для улучшения пользовательского опыта и анализа трафика.</p>
-          <p><strong>Типы используемых cookie:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li><strong>Необходимые cookie</strong> - обеспечивают базовую функциональность сайта</li>
-            <li><strong>Аналитические cookie</strong> - помогают понять, как пользователи взаимодействуют с сайтом</li>
-            <li><strong>Функциональные cookie</strong> - запоминают ваши предпочтения и настройки</li>
-            <li><strong>Рекламные cookie</strong> - используются для показа релевантной рекламы</li>
-          </ul>
-          <p><strong>Управление cookie:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Вы можете отключить cookie в настройках браузера</li>
-            <li>Отключение может повлиять на функциональность сайта</li>
-            <li>Мы не используем cookie для сбора персональных данных без согласия</li>
-          </ul>
-          <p><strong>Сторонние сервисы:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Google reCAPTCHA - для защиты от спама</li>
-            <li>Google Sheets API - для обработки заявок</li>
-            <li>Telegram Bot API - для уведомлений</li>
-          </ul>
-          <p>Продолжая использовать сайт, вы соглашаетесь с использованием cookie в соответствии с данной политикой.</p>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <>
@@ -228,26 +108,41 @@ export default function Footer() {
           {/* Документы */}
           <Reveal delay={0.15}>
             <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-8">
-              <button
-                onClick={() => setShowPolicy(true)}
+              <a
+                href="/documents/privacy-policy.html"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-white/60 hover:text-white transition-colors text-sm underline"
               >
                 Политика конфиденциальности
-              </button>
+              </a>
               <span className="text-white/40">|</span>
-              <button
-                onClick={() => setShowCookies(true)}
+              <a
+                href="/documents/cookies-policy.html"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-white/60 hover:text-white transition-colors text-sm underline"
               >
                 Правила обработки cookie
-              </button>
+              </a>
               <span className="text-white/40">|</span>
-              <button
-                onClick={() => setShowConsent(true)}
+              <a
+                href="/documents/consent.html"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-white/60 hover:text-white transition-colors text-sm underline"
               >
                 Согласие на обработку данных
-              </button>
+              </a>
+              <span className="text-white/40">|</span>
+              <a
+                href="/documents/terms-of-service.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/60 hover:text-white transition-colors text-sm underline"
+              >
+                Пользовательское соглашение
+              </a>
             </div>
           </Reveal>
 
@@ -265,10 +160,6 @@ export default function Footer() {
         </div>
       </footer>
 
-      {/* Модальные окна */}
-      {showPolicy && <PolicyModal />}
-      {showConsent && <ConsentModal />}
-      {showCookies && <CookiesModal />}
     </>
   );
 }
