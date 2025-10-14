@@ -10,22 +10,34 @@ export default function Hero() {
     <section className="relative overflow-hidden mt-[-64px] pt-[64px] pb-0 min-h-screen flex items-end hero-section" style={{ minHeight: '100vh !important', height: '100vh !important', maxHeight: '100vh !important' }}>
       {/* Видео‑фон с параллаксом */}
       <ParallaxElement speed={0.5} direction="down" className="absolute inset-0 -z-10">
-        <video
-          className="w-full h-full object-cover hero-video"
-          src="/hero.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          controls={false}
-          poster="/hero-poster.jpg"
-          style={{ 
-            height: '100vh !important', 
-            minHeight: '100vh !important', 
-            objectPosition: 'center bottom',
-            pointerEvents: 'none'
-          }}
-        />
+        <div className="relative w-full h-full overflow-hidden">
+          <video
+            className="absolute top-0 left-0 w-full h-full object-cover hero-video"
+            src="/hero.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            controls={false}
+            poster="/hero-poster.jpg"
+            style={{ 
+              height: '100vh !important', 
+              minHeight: '100vh !important', 
+              objectPosition: 'center bottom',
+              pointerEvents: 'none',
+              zIndex: -1
+            }}
+          />
+          {/* Накладываем невидимый слой поверх видео для блокировки контролов */}
+          <div 
+            className="absolute inset-0 w-full h-full"
+            style={{ 
+              zIndex: 1,
+              pointerEvents: 'auto',
+              background: 'transparent'
+            }}
+          />
+        </div>
       </ParallaxElement>
       {/* Затемнение для читаемости */}
       <div className="absolute inset-0 -z-10 bg-black/45" />
