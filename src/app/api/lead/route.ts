@@ -157,16 +157,13 @@ async function copyToGoogleSheet(data: Record<string, unknown>) {
     
     const values = [
       [
-        new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }),
-        humanizeEventType(data.eventType),
-        data.city,
-        humanizeGuestsBucket(data.guestsBucket),
-        data.contact.kind,
-        data.contact.value,
-        humanizeCallback(data.callback),
-        data.utm || '',
-        data.userAgent || '',
-        data.ipHash || ''
+        new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }), // A: Время
+        humanizeEventType(data.eventType), // B: Тип мероприятия
+        data.city, // C: Город
+        humanizeGuestsBucket(data.guestsBucket), // D: Кол-во человек
+        data.contact.kind, // E: Тип связи
+        data.contact.value, // F: Контакт
+        humanizeCallback(data.callback) // G: Желаемое время
       ]
     ];
     
@@ -174,7 +171,7 @@ async function copyToGoogleSheet(data: Record<string, unknown>) {
     
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: 'Заявки!A:J',
+      range: 'Заявки!A:G',
       valueInputOption: 'RAW',
       requestBody: { values }
     });
