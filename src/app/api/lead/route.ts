@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { PrismaClient } from '@/generated/prisma';
 import { isPossiblePhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import dns from 'dns/promises';
 import { RU_CITIES } from '@/data/cities';
 import { hasProfanity } from '@/utils/profanity';
-
-const prisma = new PrismaClient();
 
 const contactSchema = z.string().min(3).max(128).transform((raw) => {
   const value = raw.trim();
@@ -48,167 +45,223 @@ async function verifyEmailMxIfNeeded(contact: { kind: string; value: string }) {
   const domain = contact.value.split('@')[1];
   if (!domain) return false;
   const dLower = domain.toLowerCase();
-  if (BAD_DOMAIN_PARTS.some((p) => dLower.includes(p))) return false;
+  
+  // Check for profanity in domain
+  if (hasProfanity(dLower)) return false;
+  
+  // Check for bad domain parts
+  if (BAD_DOMAIN_PARTS.some(part => dLower.includes(part))) return false;
+  
   try {
-    const mx = await dns.resolveMx(domain);
-    // Строго: принимаем только если MX есть
-    return Array.isArray(mx) && mx.length > 0;
-  } catch {}
-  return false;
+    const mxRecords = await dns.resolveMx(domain);
+    return mxRecords && mxRecords.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+function humanizeEventType(type: string): string {
+  return type === 'corporate' ? 'Корпоратив' : 'Тимбилдинг';
+}
+
+function humanizeGuestsBucket(bucket: string): string {
+  const map: Record<string, string> = {
+    'lt20': '<20',
+    '20_50': '20-50',
+    '50_200': '50-200',
+    '200_500': '200-500',
+    '500p': '500+'
+  };
+  return map[bucket] || bucket;
+}
+
+function humanizeContact(contact: { kind: string; value: string }): string {
+  const kindMap: Record<string, string> = {
+    'email': 'Email',
+    'phone': 'Телефон',
+    'telegram': 'Telegram'
+  };
+  return `${kindMap[contact.kind] || contact.kind} — ${contact.value}`;
+}
+
+function humanizeCallback(callback: { type: string; atUtc?: string }): string {
+  if (callback.type === 'asap') return 'как можно скорее';
+  if (callback.atUtc) {
+    const date = new Date(callback.atUtc);
+    return date.toLocaleString('ru-RU', {
+      timeZone: 'Europe/Moscow',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  return 'не указано';
+}
+
+async function notifyTelegram(data: any) {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  
+  if (!botToken || !chatId) {
+    console.error('Telegram credentials not configured');
+    return;
+  }
+
+  const message = `🆕 Заявка
+Тип: ${humanizeEventType(data.eventType)}
+Город: ${data.city}
+Гостей: ${humanizeGuestsBucket(data.guestsBucket)}
+Контакт: ${humanizeContact(data.contact)}
+Связаться: ${humanizeCallback(data.callback)}`;
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: 'HTML'
+      })
+    });
+    
+    if (!response.ok) {
+      console.error('Telegram notification failed:', await response.text());
+    }
+  } catch (error) {
+    console.error('Telegram notification error:', error);
+  }
+}
+
+async function copyToGoogleSheet(data: any) {
+  const spreadsheetId = process.env.SHEETS_SPREADSHEET_ID;
+  const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  
+  if (!spreadsheetId || !serviceAccountJson) {
+    console.error('Google Sheets credentials not configured');
+    return;
+  }
+
+  try {
+    const { google } = await import('googleapis');
+    const serviceAccount = JSON.parse(serviceAccountJson);
+    
+    const auth = new google.auth.GoogleAuth({
+      credentials: serviceAccount,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets']
+    });
+    
+    const sheets = google.sheets({ version: 'v4', auth });
+    
+    const values = [
+      [
+        new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }),
+        humanizeEventType(data.eventType),
+        data.city,
+        humanizeGuestsBucket(data.guestsBucket),
+        data.contact.kind,
+        data.contact.value,
+        humanizeCallback(data.callback),
+        data.utm || '',
+        data.userAgent || '',
+        data.ipHash || ''
+      ]
+    ];
+    
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: 'Заявки!A:J',
+      valueInputOption: 'RAW',
+      requestBody: { values }
+    });
+  } catch (error) {
+    console.error('Google Sheets error:', error);
+  }
+}
+
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  const secret = process.env.RECAPTCHA_SECRET;
+  if (!secret) return true; // Skip if not configured
+  
+  try {
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${secret}&response=${token}`
+    });
+    
+    const data = await response.json();
+    return data.success && data.score > 0.5;
+  } catch {
+    return false;
+  }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '';
-    const ua = req.headers.get('user-agent') || '';
     const body = await req.json();
-    const parsed = leadSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ ok: false, error: 'VALIDATION', details: parsed.error.flatten() }, { status: 400 });
+    
+    // Validate city
+    if (!RU_CITIES.includes(body.city)) {
+      return NextResponse.json(
+        { error: 'INVALID_CITY' },
+        { status: 400 }
+      );
     }
-    const data = parsed.data;
-
-    // City strict check and profanity filter
-    if (!RU_CITIES.includes(data.city) || hasProfanity(data.city)) {
-      return NextResponse.json({ ok: false, error: 'CITY_INVALID' }, { status: 400 });
+    
+    // Parse and validate data
+    const data = leadSchema.parse(body);
+    
+    // Verify reCAPTCHA
+    if (data.recaptchaToken && !(await verifyRecaptcha(data.recaptchaToken))) {
+      return NextResponse.json(
+        { error: 'RECAPTCHA_FAILED' },
+        { status: 400 }
+      );
     }
-
-    // Verify reCAPTCHA v3 if provided
-    if (process.env.RECAPTCHA_SECRET && data.recaptchaToken) {
-      try {
-        const resp = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ secret: process.env.RECAPTCHA_SECRET, response: data.recaptchaToken }).toString(),
-        });
-        const ver = await resp.json();
-        if (!ver.success || (typeof ver.score === 'number' && ver.score < 0.5)) {
-          return NextResponse.json({ ok: false, error: 'RECAPTCHA' }, { status: 400 });
-        }
-      } catch {}
+    
+    // Verify email domain
+    if (!(await verifyEmailMxIfNeeded(data.contact))) {
+      return NextResponse.json(
+        { error: 'INVALID_EMAIL_DOMAIN' },
+        { status: 400 }
+      );
     }
-    // DNS check for email (strict)
-    const emailOk = await verifyEmailMxIfNeeded(data.contact);
-    if (!emailOk) {
-      return NextResponse.json({ ok: false, error: 'EMAIL_MX' }, { status: 400 });
+    
+    // Get additional data
+    const userAgent = req.headers.get('user-agent') || '';
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '';
+    const ipHash = ip ? Buffer.from(ip).toString('base64').slice(0, 16) : '';
+    
+    const leadData = {
+      ...data,
+      userAgent,
+      ipHash
+    };
+    
+    // Send notifications (parallel)
+    await Promise.all([
+      notifyTelegram(leadData),
+      copyToGoogleSheet(leadData)
+    ]);
+    
+    return NextResponse.json({ success: true });
+    
+  } catch (error) {
+    console.error('Lead submission error:', error);
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'VALIDATION_ERROR', details: error.issues },
+        { status: 400 }
+      );
     }
-
-    const saved = await prisma.lead.create({
-      data: {
-        eventType: data.eventType,
-        city: data.city,
-        guestsBucket: data.guestsBucket,
-        contactKind: data.contact.kind,
-        contactValue: data.contact.value,
-        callbackType: data.callback.type,
-        callbackAtUtc: data.callback.atUtc ? new Date(data.callback.atUtc) : null,
-        utm: data.utm || null,
-        userAgent: ua,
-        ipHash: ip ? await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ip)).then((buf) => Buffer.from(buf).toString('hex')) : null,
-      },
-    });
-
-    // Fire-and-forget notifications/copies
-    notifyTelegram(saved).catch(() => {});
-    copyToGoogleSheet(saved).catch(() => {});
-
-    return NextResponse.json({ ok: true });
-  } catch (e) {
-    return NextResponse.json({ ok: false, error: 'SERVER' }, { status: 500 });
+    
+    return NextResponse.json(
+      { error: 'INTERNAL_ERROR' },
+      { status: 500 }
+    );
   }
 }
-
-function humanizeEventType(code: string): string {
-  return code === 'corporate' ? 'Корпоратив' : 'Тимбилдинг';
-}
-
-function humanizeGuestsBucket(code: string): string {
-  switch (code) {
-    case 'lt20':
-      return '<20';
-    case '20_50':
-      return '20–50';
-    case '50_200':
-      return '50–200';
-    case '200_500':
-      return '200–500';
-    case '500p':
-      return '500+';
-    default:
-      return code;
-  }
-}
-
-function humanizeContact(kind: string): string {
-  if (kind === 'phone') return 'Телефон';
-  if (kind === 'telegram') return 'Telegram';
-  if (kind === 'email') return 'Email';
-  return kind;
-}
-
-function humanizeCallback(type: string, at?: any): string {
-  if (type === 'asap') return 'как можно скорее';
-  if (type === 'slot' && at) {
-    try {
-      const dt = new Date(at);
-      return `к ${dt.toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit' })} ${dt.toLocaleDateString('ru-RU')}`;
-    } catch {
-      return 'к указанному времени';
-    }
-  }
-  return type;
-}
-
-async function notifyTelegram(lead: any) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chatId) return;
-  const text = [
-    '🆕 Заявка',
-    `Тип: ${humanizeEventType(lead.eventType)}`,
-    `Город: ${lead.city}`,
-    `Гостей: ${humanizeGuestsBucket(lead.guestsBucket)}`,
-    `Контакт: ${humanizeContact(lead.contactKind)} — ${lead.contactValue}`,
-    `Связаться: ${humanizeCallback(lead.callbackType, lead.callbackAtUtc)}`,
-  ].join('\n');
-  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text }),
-  });
-}
-
-async function copyToGoogleSheet(lead: any) {
-  const creds = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-  const sheetId = process.env.SHEETS_SPREADSHEET_ID;
-  if (!creds || !sheetId) return;
-  const { google } = await import('googleapis');
-  const auth = new google.auth.JWT({
-    email: JSON.parse(creds).client_email,
-    key: JSON.parse(creds).private_key,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
-  const sheets = google.sheets({ version: 'v4', auth });
-  await sheets.spreadsheets.values.append({
-    spreadsheetId: sheetId,
-    range: 'Заявки!A1',
-    valueInputOption: 'RAW',
-    requestBody: {
-      values: [
-        [
-          new Date(lead.createdAt).toLocaleString('ru-RU'),
-          humanizeEventType(lead.eventType),
-          lead.city,
-          humanizeGuestsBucket(lead.guestsBucket),
-          humanizeContact(lead.contactKind),
-          lead.contactValue,
-          humanizeCallback(lead.callbackType, lead.callbackAtUtc),
-          lead.callbackAtUtc ? new Date(lead.callbackAtUtc).toLocaleString('ru-RU') : '',
-          lead.utm || '',
-        ],
-      ],
-    },
-  });
-}
-
-
