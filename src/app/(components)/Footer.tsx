@@ -9,16 +9,57 @@ export default function Footer() {
   const [showCookies, setShowCookies] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
-  // Simple scroll blocking
+  // Simple and reliable scroll blocking
   useEffect(() => {
+    const preventScroll = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+
     if (showPolicy || showConsent || showCookies || showTerms) {
+      // Block body scroll
       document.body.style.overflow = 'hidden';
+      
+      // Prevent scroll events
+      document.addEventListener('wheel', preventScroll, { passive: false });
+      document.addEventListener('touchmove', preventScroll, { passive: false });
+      document.addEventListener('keydown', (e) => {
+        if ([32, 33, 34, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) {
+          e.preventDefault();
+        }
+      });
+      
+      // Disable Lenis if available
+      const lenis = (window as any).lenis;
+      if (lenis && typeof lenis.stop === 'function') {
+        lenis.stop();
+      }
     } else {
+      // Restore body scroll
       document.body.style.overflow = 'unset';
+      
+      // Remove scroll event listeners
+      document.removeEventListener('wheel', preventScroll);
+      document.removeEventListener('touchmove', preventScroll);
+      
+      // Re-enable Lenis if available
+      const lenis = (window as any).lenis;
+      if (lenis && typeof lenis.start === 'function') {
+        lenis.start();
+      }
     }
     
     return () => {
+      // Cleanup
       document.body.style.overflow = 'unset';
+      document.removeEventListener('wheel', preventScroll);
+      document.removeEventListener('touchmove', preventScroll);
+      
+      const lenis = (window as any).lenis;
+      if (lenis && typeof lenis.start === 'function') {
+        lenis.start();
+      }
     };
   }, [showPolicy, showConsent, showCookies, showTerms]);
 
@@ -80,7 +121,14 @@ export default function Footer() {
   ];
 
   const PolicyModal = () => (
-    <div className="modal-overlay bg-black/80 flex items-center justify-center p-4">
+    <div 
+      className="modal-overlay bg-black/80 flex items-center justify-center p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          setShowPolicy(false);
+        }
+      }}
+    >
       <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Политика конфиденциальности</h3>
@@ -224,7 +272,14 @@ export default function Footer() {
   );
 
   const ConsentModal = () => (
-    <div className="modal-overlay bg-black/80 flex items-center justify-center p-4">
+    <div 
+      className="modal-overlay bg-black/80 flex items-center justify-center p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          setShowConsent(false);
+        }
+      }}
+    >
       <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Согласие на обработку персональных данных</h3>
@@ -259,7 +314,14 @@ export default function Footer() {
   );
 
   const CookiesModal = () => (
-    <div className="modal-overlay bg-black/80 flex items-center justify-center p-4">
+    <div 
+      className="modal-overlay bg-black/80 flex items-center justify-center p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          setShowCookies(false);
+        }
+      }}
+    >
       <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Правила обработки cookie</h3>
@@ -322,7 +384,14 @@ export default function Footer() {
   );
 
   const TermsModal = () => (
-    <div className="modal-overlay bg-black/80 flex items-center justify-center p-4">
+    <div 
+      className="modal-overlay bg-black/80 flex items-center justify-center p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          setShowTerms(false);
+        }
+      }}
+    >
       <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Пользовательское соглашение</h3>
