@@ -131,7 +131,9 @@ async function notifyTelegram(data: Record<string, unknown>) {
     // Если указан ID топика, отправляем в топик
     if (topicId) {
       requestBody.message_thread_id = parseInt(topicId);
-      console.log('Sending to topic:', topicId);
+      console.log('Sending to topic:', topicId, 'parsed:', parseInt(topicId));
+    } else {
+      console.log('No topic ID provided, sending to general chat');
     }
 
     const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
