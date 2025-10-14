@@ -161,12 +161,9 @@ async function copyToGoogleSheet(data: Record<string, unknown>) {
         humanizeEventType(data.eventType),
         data.city,
         humanizeGuestsBucket(data.guestsBucket),
-        data.contact.kind,
-        data.contact.value,
+        humanizeContact(data.contact),
         humanizeCallback(data.callback),
-        data.utm || '',
-        data.userAgent || '',
-        data.ipHash || ''
+        data.utm || ''
       ]
     ];
     
@@ -174,7 +171,7 @@ async function copyToGoogleSheet(data: Record<string, unknown>) {
     
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: 'Заявки!A:J',
+      range: 'Заявки!A:G',
       valueInputOption: 'RAW',
       requestBody: { values }
     });
@@ -233,15 +230,8 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // Get additional data
-    const userAgent = req.headers.get('user-agent') || '';
-    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '';
-    const ipHash = ip ? Buffer.from(ip).toString('base64').slice(0, 16) : '';
-    
     const leadData = {
-      ...data,
-      userAgent,
-      ipHash
+      ...data
     };
     
     // Send notifications (parallel)
