@@ -25,7 +25,7 @@ export default function LegalModals({
 }: LegalModalsProps) {
   const PolicyModal = () => (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10">
+      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Политика конфиденциальности</h3>
           <button 
@@ -169,7 +169,7 @@ export default function LegalModals({
 
   const ConsentModal = () => (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10">
+      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Согласие на обработку персональных данных</h3>
           <button 
