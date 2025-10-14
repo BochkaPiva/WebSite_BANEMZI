@@ -50,9 +50,10 @@ export default function Header() {
         <nav className="hidden sm:flex items-center justify-center absolute left-1/2 -translate-x-1/2 z-20 px-2">
           <WaveMenu 
             items={[
-              { label: "Услуги", href: "#services" },
+              { label: "Что умеем", href: "#dream-event" },
               { label: "Что получите", href: "#benefits" },
               { label: "Процесс", href: "#process" },
+              { label: "Города", href: "#cities" },
               { label: "FAQ", href: "#faq" }
             ]}
           />

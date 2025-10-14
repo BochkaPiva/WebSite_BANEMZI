@@ -27,7 +27,7 @@ const contactSchema = z.string().min(3).max(128).transform((raw) => {
 });
 
 const leadSchema = z.object({
-  eventType: z.enum(['corporate', 'teambuilding']),
+  eventType: z.enum(['corporate', 'teambuilding', 'presentation', 'promo', 'business']),
   city: z.string().min(2).max(64),
   guestsBucket: z.enum(['lt20', '20_50', '50_200', '200_500', '500p']),
   contact: contactSchema,
@@ -61,7 +61,14 @@ async function verifyEmailMxIfNeeded(contact: { kind: string; value: string }) {
 }
 
 function humanizeEventType(type: string): string {
-  return type === 'corporate' ? 'Корпоратив' : 'Тимбилдинг';
+  const map: Record<string, string> = {
+    'corporate': 'Корпоративные праздники',
+    'teambuilding': 'Тимбилдинги и квесты',
+    'presentation': 'Презентации и запуски',
+    'promo': 'Промо-мероприятия',
+    'business': 'Деловые события'
+  };
+  return map[type] || type;
 }
 
 function humanizeGuestsBucket(bucket: string): string {
@@ -178,12 +185,12 @@ async function copyToGoogleSheet(data: Record<string, unknown>) {
     const values = [
       [
         new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }), // A: Время
-        humanizeEventType(data.eventType), // B: Тип мероприятия
-        data.city, // C: Город
-        humanizeGuestsBucket(data.guestsBucket), // D: Кол-во человек
-        data.contact.kind, // E: Тип связи
-        data.contact.value, // F: Контакт
-        humanizeCallback(data.callback) // G: Желаемое время
+        humanizeEventType(data.eventType as string), // B: Тип мероприятия
+        data.city as string, // C: Город
+        humanizeGuestsBucket(data.guestsBucket as string), // D: Кол-во человек
+        (data.contact as { kind: string; value: string }).kind, // E: Тип связи
+        (data.contact as { kind: string; value: string }).value, // F: Контакт
+        humanizeCallback(data.callback as { type: string; atUtc?: string }) // G: Желаемое время
       ]
     ];
     

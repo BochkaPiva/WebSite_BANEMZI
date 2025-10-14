@@ -27,6 +27,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL || 'http://localhost:3000'),
   icons: {
     icon: [
+      { url: '/favicon.ico', type: 'image/x-icon' },
       { url: '/Logo.png', type: 'image/png' },
     ],
     shortcut: [{ url: '/Logo.png', type: 'image/png' }],
@@ -42,6 +43,7 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="icon" href="/Logo.png" type="image/png" sizes="32x32" />
         <link rel="shortcut icon" href="/Logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/Logo.png" />

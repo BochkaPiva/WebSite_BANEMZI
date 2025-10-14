@@ -1,15 +1,19 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { motion } from 'framer-motion';
 import { RU_CITIES, filterCities } from '@/data/cities';
+import Reveal from './Reveal';
 
-type Step1 = { eventType: 'corporate' | 'teambuilding'; city: string; guestsBucket: 'lt20' | '20_50' | '50_200' | '200_500' | '500p' };
+type Step1 = { eventType: 'corporate' | 'teambuilding' | 'presentation' | 'promo' | 'business' };
+type Step2 = { city: string; guestsBucket: 'lt20' | '20_50' | '50_200' | '200_500' | '500p' };
 type Callback = { type: 'asap' | 'slot'; atUtc?: string };
 
 export default function LeadForm() {
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [loading, setLoading] = useState(false);
-  const [step1, setStep1] = useState<Step1>({ eventType: 'corporate', city: '', guestsBucket: '20_50' });
+  const [step1, setStep1] = useState<Step1>({ eventType: 'corporate' });
+  const [step2, setStep2] = useState<Step2>({ city: '', guestsBucket: '20_50' });
   const [contact, setContact] = useState('');
   const [callback, setCallback] = useState<Callback>({ type: 'asap' });
   const [message, setMessage] = useState<string | null>(null);
@@ -59,44 +63,30 @@ export default function LeadForm() {
         lenis.start();
       }
     }
-    
+
     return () => {
-      // Cleanup
       document.body.style.overflow = 'unset';
       document.removeEventListener('wheel', preventScroll);
       document.removeEventListener('touchmove', preventScroll);
-      
-      const lenis = (window as any).lenis;
-      if (lenis && typeof lenis.start === 'function') {
-        lenis.start();
-      }
     };
   }, [showPolicy, showConsentDoc]);
-  const [utm, setUtm] = useState<string | undefined>(undefined);
 
+  // Hide cities dropdown when clicking outside
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const entries: string[] = [];
-    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach((k) => {
-      const v = params.get(k);
-      if (v) entries.push(`${k}=${v}`);
-    });
-    const ref = document.referrer;
-    if (ref && !ref.includes('localhost')) entries.push(`referrer=${encodeURIComponent(ref)}`);
-    if (entries.length) setUtm(entries.join('&'));
-  }, []);
-
-  useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      if (cityBoxRef.current && !cityBoxRef.current.contains(e.target as Node)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cityBoxRef.current && !cityBoxRef.current.contains(event.target as Node)) {
         setShowCities(false);
       }
     };
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const handleSubmit = async () => {
+    if (loading) return;
     setLoading(true);
     setMessage(null);
     try {
@@ -108,18 +98,18 @@ export default function LeadForm() {
       if ((window as any).grecaptcha && process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
         recaptchaToken = await (window as any).grecaptcha.execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY, { action: 'submit' });
       }
-      const cityOk = RU_CITIES.includes(step1.city.trim());
+      const cityOk = RU_CITIES.includes(step2.city.trim());
       const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           eventType: step1.eventType,
-          city: cityOk ? step1.city.trim() : '',
-          guestsBucket: step1.guestsBucket,
+          city: cityOk ? step2.city.trim() : '',
+          guestsBucket: step2.guestsBucket,
           contact,
           callback,
           recaptchaToken,
-          utm,
+          utm: typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('utm_source') || '' : '',
           consentAccepted: true,
         }),
       });
@@ -135,7 +125,8 @@ export default function LeadForm() {
       setTimeout(() => {
         setStep(1);
         setContact('');
-        setStep1({ eventType: 'corporate', city: '', guestsBucket: '20_50' });
+        setStep1({ eventType: 'corporate' });
+        setStep2({ city: '', guestsBucket: '20_50' });
         setCallback({ type: 'asap' });
         setConsent(false);
         setMessage(null);
@@ -148,147 +139,468 @@ export default function LeadForm() {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto p-6 rounded-2xl bg-[#111] border border-white/10 text-white will-change-transform" style={{ transform: 'translateZ(0)' }}>
-      {step === 1 ? (
-        <div className="space-y-5">
-          <div className="text-sm uppercase tracking-widest text-white/60">Шаг 1 из 2</div>
-          <div>
-            <label className="block mb-2 text-sm text-white/80">Тип</label>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { k: 'corporate', t: 'Корпоратив' },
-                { k: 'teambuilding', t: 'Тимбилдинг' },
-              ].map((opt) => (
-                <button
-                  key={opt.k}
-                  type="button"
-                  onClick={() => setStep1({ ...step1, eventType: opt.k as any })}
-                  className={`py-3 rounded-xl border ${step1.eventType === opt.k ? 'border-orange-500 bg-orange-500/10' : 'border-white/10 hover:border-white/20'}`}
-                >
-                  {opt.t}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div ref={cityBoxRef}>
-            <label className="block mb-2 text-sm text-white/80">Город</label>
-            <div className="relative">
-              <input
-                value={step1.city}
-                onChange={(e) => { setStep1({ ...step1, city: e.target.value }); setShowCities(true); }}
-                onFocus={() => setShowCities(true)}
-                placeholder="Начните вводить город"
-                className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 focus:outline-none focus:border-orange-500"
-              />
-              {step1.city && showCities && (
-                <div className="absolute z-10 mt-1 w-full max-h-56 overflow-auto rounded-xl border border-white/10 bg-[#0F0F0F]">
-                  {filterCities(step1.city).map((c) => (
-                    <button key={c} type="button" onClick={() => { setStep1({ ...step1, city: c }); setShowCities(false); }} className="w-full text-left px-4 py-2 hover:bg-white/5">
-                      {c}
-                    </button>
+    <Reveal className="relative">
+      <div className="relative w-full max-w-2xl mx-auto">
+        {/* Декоративные элементы */}
+        <div className="absolute -top-6 -left-6 w-12 h-12 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow-lg animate-pulse opacity-60"></div>
+        <div className="absolute -bottom-4 -right-4 w-8 h-8 bg-gradient-to-r from-orange-300 to-orange-500 rounded-full shadow-lg"></div>
+        
+        {/* Основной контейнер формы */}
+        <motion.div 
+          className="relative p-8 md:p-12 rounded-3xl bg-gradient-to-br from-gray-800/40 via-gray-700/20 to-gray-800/40 border-2 border-orange-400/20 backdrop-blur-sm shadow-2xl text-white"
+          initial={{ opacity: 0, y: 30, rotate: -1 }}
+          animate={{ opacity: 1, y: 0, rotate: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          {/* Заголовок формы */}
+          <motion.div 
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-orange-500 mb-2">
+              Оставить заявку
+            </h2>
+            <p className="text-gray-300 text-lg">Расскажите о вашем мероприятии</p>
+          </motion.div>
+
+          {step === 1 ? (
+            <motion.div 
+              className="space-y-8"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
+              <div className="flex items-center justify-center space-x-2 mb-6">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-sm">1</div>
+                  <span className="text-orange-400 font-semibold text-sm">Тип мероприятия</span>
+                </div>
+                <div className="w-8 h-0.5 bg-gray-600"></div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-400 font-bold text-sm">2</div>
+                  <span className="text-gray-400 font-semibold text-sm">Детали</span>
+                </div>
+                <div className="w-8 h-0.5 bg-gray-600"></div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-400 font-bold text-sm">3</div>
+                  <span className="text-gray-400 font-semibold text-sm">Контакты</span>
+                </div>
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+              >
+                <label className="block mb-4 text-lg font-semibold text-white">Тип мероприятия</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    { k: 'corporate', t: 'Корпоративные праздники', icon: '🎉', desc: 'Дни рождения компаний, юбилеи, корпоративы' },
+                    { k: 'teambuilding', t: 'Тимбилдинги и квесты', icon: '🤝', desc: 'Сплочение команды через интерактивные активности' },
+                    { k: 'presentation', t: 'Презентации и запуски', icon: '🚀', desc: 'Презентации товаров, услуг, новых локаций' },
+                    { k: 'promo', t: 'Промо-мероприятия', icon: '📢', desc: 'Знакомство с брендом, рекламные акции' },
+                    { k: 'business', t: 'Деловые события', icon: '💼', desc: 'Конференции, семинары, бизнес-встречи' },
+                  ].map((opt, index) => (
+                    <motion.button
+                      key={opt.k}
+                      type="button"
+                      onClick={() => setStep1({ eventType: opt.k as any })}
+                      className={`relative p-6 rounded-2xl border-2 transition-all duration-300 group text-left ${
+                        step1.eventType === opt.k 
+                          ? 'border-orange-400 bg-gradient-to-br from-orange-500/20 to-orange-600/10 shadow-lg shadow-orange-500/20' 
+                          : 'border-gray-600/50 bg-gray-800/30 hover:border-orange-400/50 hover:bg-gray-700/40'
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
+                    >
+                      <div className="flex items-start space-x-4">
+                        <div className="text-3xl group-hover:scale-110 transition-transform duration-200 flex-shrink-0">{opt.icon}</div>
+                        <div className="flex-1">
+                          <div className="font-semibold text-white text-lg mb-1">{opt.t}</div>
+                          <div className="text-gray-300 text-sm leading-relaxed">{opt.desc}</div>
+                        </div>
+                      </div>
+                      {step1.eventType === opt.k && (
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                      )}
+                    </motion.button>
                   ))}
-                  {filterCities(step1.city).length === 0 && (
-                    <div className="px-4 py-2 text-white/60">Город не найден</div>
+                </div>
+              </motion.div>
+
+
+              <motion.div 
+                className="flex justify-end mt-8"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 1.4 }}
+              >
+                <motion.button 
+                  type="button" 
+                  onClick={() => {
+                    setMessage(null);
+                    setStep(2);
+                  }} 
+                  className="relative px-8 py-4 rounded-2xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 text-white font-bold text-lg shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 transform rotate-1 hover:rotate-0"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="relative z-10">Далее →</span>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-white/20 rounded-full"></div>
+                </motion.button>
+              </motion.div>
+
+              {message && (
+                <motion.div 
+                  className={`text-center p-4 rounded-2xl ${
+                    message.includes('✅') 
+                      ? 'text-green-400 bg-green-400/10 border-2 border-green-400/20' 
+                      : 'text-red-400 bg-red-400/10 border-2 border-red-400/20'
+                  }`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {message}
+                </motion.div>
+              )}
+            </motion.div>
+          ) : step === 2 ? (
+            <motion.div 
+              className="space-y-8"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <div className="flex items-center justify-center space-x-2 mb-6">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-400 font-bold text-sm">1</div>
+                  <span className="text-gray-400 font-semibold text-sm">Тип мероприятия</span>
+                </div>
+                <div className="w-8 h-0.5 bg-orange-400"></div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
+                  <span className="text-orange-400 font-semibold text-sm">Детали</span>
+                </div>
+                <div className="w-8 h-0.5 bg-gray-600"></div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-400 font-bold text-sm">3</div>
+                  <span className="text-gray-400 font-semibold text-sm">Контакты</span>
+                </div>
+              </div>
+
+              <motion.div 
+                ref={cityBoxRef}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <label className="block mb-4 text-lg font-semibold text-white">Город проведения</label>
+                <div className="relative">
+                  <div className="relative">
+                    <input
+                      value={step2.city}
+                      onChange={(e) => { setStep2({ ...step2, city: e.target.value }); setShowCities(true); }}
+                      onFocus={() => setShowCities(true)}
+                      placeholder="Начните вводить город"
+                      className="w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-gray-800/50 to-gray-700/30 border-2 border-gray-600/50 focus:outline-none focus:border-orange-400 focus:bg-gradient-to-r focus:from-gray-700/50 focus:to-gray-600/30 transition-all duration-300 text-white placeholder-gray-400"
+                    />
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                      📍
+                    </div>
+                  </div>
+                  {step2.city && showCities && (
+                    <motion.div 
+                      className="absolute z-10 mt-2 w-full max-h-56 overflow-auto rounded-2xl border-2 border-orange-400/30 bg-gradient-to-br from-gray-800/90 to-gray-700/90 backdrop-blur-sm shadow-2xl"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {filterCities(step2.city).map((c, index) => (
+                        <motion.button 
+                          key={c} 
+                          type="button" 
+                          onClick={() => { 
+                            console.log('Выбран город:', c);
+                            setStep2({ ...step2, city: c }); 
+                            setShowCities(false); 
+                          }} 
+                          className="w-full text-left px-6 py-3 hover:bg-orange-400/10 transition-colors duration-200 border-b border-gray-600/30 last:border-b-0"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.05 }}
+                        >
+                          <span className="text-white font-medium">{c}</span>
+                        </motion.button>
+                      ))}
+                      {filterCities(step2.city).length === 0 && (
+                        <div className="px-6 py-3 text-gray-400">Город не найден</div>
+                      )}
+                    </motion.div>
                   )}
                 </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                <label className="block mb-4 text-lg font-semibold text-white">Количество гостей</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { k: 'lt20', t: '<20', icon: '👥' },
+                    { k: '20_50', t: '20–50', icon: '👥👥' },
+                    { k: '50_200', t: '50–200', icon: '👥👥👥' },
+                    { k: '200_500', t: '200–500', icon: '👥👥👥👥' },
+                    { k: '500p', t: '500+', icon: '👥👥👥👥👥' },
+                  ].map((opt, index) => (
+                    <motion.button
+                      key={opt.k}
+                      type="button"
+                      onClick={() => setStep2({ ...step2, guestsBucket: opt.k as any })}
+                      className={`relative p-4 rounded-xl border-2 transition-all duration-300 group ${
+                        step2.guestsBucket === opt.k 
+                          ? 'border-orange-400 bg-gradient-to-br from-orange-500/20 to-orange-600/10 shadow-lg shadow-orange-500/20' 
+                          : 'border-gray-600/50 bg-gray-800/30 hover:border-orange-400/50 hover:bg-gray-700/40'
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.95 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                    >
+                      <div className="text-lg mb-1 group-hover:scale-110 transition-transform duration-200">{opt.icon}</div>
+                      <div className="font-semibold text-white text-sm">{opt.t}</div>
+                      {step2.guestsBucket === opt.k && (
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-400 rounded-full flex items-center justify-center">
+                          <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                        </div>
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div 
+                className="flex justify-between mt-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+              >
+                <motion.button 
+                  type="button" 
+                  onClick={() => setStep(1)} 
+                  className="px-6 py-3 rounded-xl border-2 border-gray-600/50 text-gray-300 hover:border-orange-400/50 hover:text-white transition-all duration-300"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  ← Назад
+                </motion.button>
+                <motion.button 
+                  type="button" 
+                  onClick={() => {
+                    if (!step2.city.trim()) {
+                      setMessage('Пожалуйста, выберите город');
+                      return;
+                    }
+                    setMessage(null);
+                    setStep(3);
+                  }} 
+                  className="relative px-8 py-4 rounded-2xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 text-white font-bold text-lg shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 transform rotate-1 hover:rotate-0"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="relative z-10">Далее →</span>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-white/20 rounded-full"></div>
+                </motion.button>
+              </motion.div>
+
+              {message && (
+                <motion.div 
+                  className={`text-center p-4 rounded-2xl ${
+                    message.includes('✅') 
+                      ? 'text-green-400 bg-green-400/10 border-2 border-green-400/20' 
+                      : 'text-red-400 bg-red-400/10 border-2 border-red-400/20'
+                  }`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {message}
+                </motion.div>
               )}
-            </div>
-          </div>
-          <div>
-            <label className="block mb-2 text-sm text-white/80">Количество гостей</label>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { k: 'lt20', t: '<20' },
-                { k: '20_50', t: '20–50' },
-                { k: '50_200', t: '50–200' },
-                { k: '200_500', t: '200–500' },
-                { k: '500p', t: '500+' },
-              ].map((opt) => (
-                <button key={opt.k} type="button" onClick={() => setStep1({ ...step1, guestsBucket: opt.k as any })} className={`py-3 rounded-xl border ${step1.guestsBucket === opt.k ? 'border-orange-500 bg-orange-500/10' : 'border-white/10 hover:border-white/20'}`}>
-                  {opt.t}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <button 
-              type="button" 
-              onClick={() => {
-                if (!step1.city.trim()) {
-                  setMessage('Пожалуйста, выберите город');
-                  return;
-                }
-                setMessage(null); // Очищаем сообщение при успешном переходе
-                setStep(2);
-              }} 
-              className="px-5 py-3 rounded-xl bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00] text-black font-semibold"
+            </motion.div>
+          ) : (
+            <motion.div 
+              className="space-y-8"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              Далее
-            </button>
-          </div>
-          {message && (
-            <div className={`text-center p-3 rounded-lg ${
-              message.includes('✅') 
-                ? 'text-green-400 bg-green-400/10 border border-green-400/20' 
-                : 'text-red-400 bg-red-400/10 border border-red-400/20'
-            }`}>
-              {message}
-            </div>
+              <div className="flex items-center justify-center space-x-2 mb-6">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-400 font-bold text-sm">1</div>
+                  <span className="text-gray-400 font-semibold text-sm">Тип мероприятия</span>
+                </div>
+                <div className="w-8 h-0.5 bg-orange-400"></div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-400 font-bold text-sm">2</div>
+                  <span className="text-gray-400 font-semibold text-sm">Детали</span>
+                </div>
+                <div className="w-8 h-0.5 bg-orange-400"></div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
+                  <span className="text-orange-400 font-semibold text-sm">Контакты</span>
+                </div>
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <label className="block mb-4 text-lg font-semibold text-white">Контакт для связи</label>
+                <div className="relative">
+                  <input 
+                    value={contact} 
+                    onChange={(e) => setContact(e.target.value)} 
+                    placeholder="+7… или @username или email" 
+                    className="w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-gray-800/50 to-gray-700/30 border-2 border-gray-600/50 focus:outline-none focus:border-orange-400 focus:bg-gradient-to-r focus:from-gray-700/50 focus:to-gray-600/30 transition-all duration-300 text-white placeholder-gray-400" 
+                  />
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    📞
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                <label className="block mb-4 text-lg font-semibold text-white">Когда связаться</label>
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { k: 'asap', t: 'Как можно скорее', icon: '⚡' },
+                    { k: 'slot', t: 'Выбрать время', icon: '🕐' },
+                  ].map((opt, index) => (
+                    <motion.button
+                      key={opt.k}
+                      type="button"
+                      onClick={() => setCallback(opt.k === 'asap' ? { type: 'asap' } : { type: 'slot', atUtc: new Date().toISOString() })}
+                      className={`relative p-6 rounded-2xl border-2 transition-all duration-300 group ${
+                        callback.type === opt.k 
+                          ? 'border-orange-400 bg-gradient-to-br from-orange-500/20 to-orange-600/10 shadow-lg shadow-orange-500/20' 
+                          : 'border-gray-600/50 bg-gray-800/30 hover:border-orange-400/50 hover:bg-gray-700/40'
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.95 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                    >
+                      <div className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-200">{opt.icon}</div>
+                      <div className="font-semibold text-white text-sm">{opt.t}</div>
+                      {callback.type === opt.k && (
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+
+              {callback.type === 'slot' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                >
+                  <input
+                    type="datetime-local"
+                    onChange={(e) => {
+                      const dt = new Date(e.target.value);
+                      const h = dt.getHours();
+                      if (h < 10 || h > 19) {
+                        alert('Выберите время с 10:00 до 19:00');
+                        return;
+                      }
+                      setCallback({ type: 'slot', atUtc: dt.toISOString() });
+                    }}
+                    className="mt-3 w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-gray-800/50 to-gray-700/30 border-2 border-gray-600/50 focus:outline-none focus:border-orange-400 focus:bg-gradient-to-r focus:from-gray-700/50 focus:to-gray-600/30 transition-all duration-300 text-white"
+                  />
+                </motion.div>
+              )}
+
+              <motion.div 
+                className="flex items-center justify-between mt-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+              >
+                <motion.button 
+                  type="button" 
+                  onClick={() => setStep(2)} 
+                  className="px-6 py-3 rounded-xl border-2 border-gray-600/50 text-gray-300 hover:border-orange-400/50 hover:text-white transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  ← Назад
+                </motion.button>
+                <motion.button 
+                  disabled={loading} 
+                  type="button" 
+                  onClick={handleSubmit} 
+                  className="relative px-8 py-4 rounded-2xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 text-white font-bold text-lg shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 disabled:opacity-60 transform rotate-1 hover:rotate-0"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="relative z-10">{loading ? 'Отправка…' : 'Отправить →'}</span>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-white/20 rounded-full"></div>
+                </motion.button>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+              >
+                <label className="flex items-start gap-3 text-sm text-gray-300">
+                  <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1 w-4 h-4 text-orange-500 bg-gray-800 border-gray-600 rounded focus:ring-orange-500" />
+                  <span>
+                    Согласен с <button onClick={() => setShowPolicy(true)} className="text-orange-400 hover:text-orange-300 underline">политикой конфиденциальности</button> и <button onClick={() => setShowConsentDoc(true)} className="text-orange-400 hover:text-orange-300 underline">согласием на обработку персональных данных</button>.
+                  </span>
+                </label>
+              </motion.div>
+
+              {message && (
+                <motion.div 
+                  className={`text-center p-4 rounded-2xl ${
+                    message.includes('✅') 
+                      ? 'text-green-400 bg-green-400/10 border-2 border-green-400/20' 
+                      : 'text-red-400 bg-red-400/10 border-2 border-red-400/20'
+                  }`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {message}
+                </motion.div>
+              )}
+            </motion.div>
           )}
-        </div>
-      ) : (
-        <div className="space-y-5">
-          <div className="text-sm uppercase tracking-widest text-white/60">Шаг 2 из 2</div>
-          <div>
-            <label className="block mb-2 text-sm text-white/80">Контакт (телефон / @telegram / email)</label>
-            <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="+7… или @username или email" className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 focus:outline-none focus:border-orange-500" />
-          </div>
-          <div>
-            <label className="block mb-2 text-sm text-white/80">Когда связаться</label>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => setCallback({ type: 'asap' })} className={`px-4 py-2 rounded-xl border ${callback.type === 'asap' ? 'border-orange-500 bg-orange-500/10' : 'border-white/10 hover:border-white/20'}`}>Как можно скорее</button>
-              <button type="button" onClick={() => setCallback({ type: 'slot', atUtc: new Date().toISOString() })} className={`px-4 py-2 rounded-xl border ${callback.type === 'slot' ? 'border-orange-500 bg-orange-500/10' : 'border-white/10 hover:border-white/20'}`}>Выбрать время</button>
-            </div>
-            {callback.type === 'slot' && (
-              <input
-                type="datetime-local"
-                onChange={(e) => {
-                  const dt = new Date(e.target.value);
-                  const h = dt.getHours();
-                  if (h < 10 || h > 19) {
-                    alert('Выберите время с 10:00 до 19:00');
-                    return;
-                  }
-                  setCallback({ type: 'slot', atUtc: dt.toISOString() });
-                }}
-                className="mt-3 w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 focus:outline-none focus:border-orange-500"
-              />
-            )}
-          </div>
-          <div className="flex items-center justify-between">
-            <button type="button" onClick={() => setStep(1)} className="px-5 py-3 rounded-xl border border-white/10 text-white/80 hover:border-white/20">Назад</button>
-            <button disabled={loading} type="button" onClick={handleSubmit} className="px-5 py-3 rounded-xl bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00] text-black font-semibold disabled:opacity-60">
-              {loading ? 'Отправка…' : 'Отправить'}
-            </button>
-          </div>
-          <label className="flex items-start gap-3 text-sm text-white/70">
-            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1" />
-            <span>
-              Согласен с <a href="#" onClick={(e) => { e.preventDefault(); setShowPolicy(true); }} className="underline">политикой конфиденциальности</a> и <a href="#" onClick={(e) => { e.preventDefault(); setShowConsentDoc(true); }} className="underline">согласием на обработку персональных данных</a>.
-            </span>
-          </label>
-          {message && (
-            <div className={`text-center p-3 rounded-lg ${
-              message.includes('✅') 
-                ? 'text-green-400 bg-green-400/10 border border-green-400/20' 
-                : 'text-white/80'
-            }`}>
-              {message}
-            </div>
-          )}
-        </div>
-      )}
-      
+        </motion.div>
+      </div>
+
       {/* Policy Modal */}
       {showPolicy && createPortal(
         <div 
@@ -299,107 +611,60 @@ export default function LeadForm() {
             }
           }}
         >
-          <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Политика конфиденциальности</h3>
+          <div className="bg-gray-900 rounded-2xl max-w-5xl max-h-[95vh] overflow-y-auto scrollbar-thin">
+            <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-6 flex justify-between items-center">
+              <h3 className="text-2xl font-bold text-white">Политика конфиденциальности</h3>
               <button 
                 onClick={() => setShowPolicy(false)}
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <div className="text-white/80 space-y-4 text-sm leading-relaxed modal-content">
+            <div className="text-white/80 space-y-4 text-sm leading-relaxed modal-content p-6">
               <p><strong>Дата обновления:</strong> 14 октября 2025 г.</p>
               
               <h4 className="text-white font-semibold mt-6">1. Общие положения</h4>
-              <p>Настоящая политика обработки персональных данных составлена в соответствии с требованиями Федерального закона от 27.07.2006 № 152-ФЗ «О персональных данных» (далее — Закон о персональных данных) и определяет порядок сбора и обработки персональных данных пользователей веб-сайта banemzi.ru и меры по обеспечению безопасности персональных данных, предпринимаемые BANEMZI (далее — Оператор).</p>
-              
-              <p>1.1. Оператор ставит своей важнейшей целью и условием осуществления своей деятельности соблюдение прав и свобод человека и гражданина при обработке его персональных данных, в том числе защиты прав на неприкосновенность частной жизни, личную и семейную тайну.</p>
-              
-              <p>1.2. Настоящая политика Оператора в отношении обработки персональных данных (далее — Политика) применяется ко всей информации, которую Оператор может получить о пользователях веб-сайта banemzi.ru</p>
+              <p>1.1. Настоящая Политика конфиденциальности (далее — «Политика») определяет порядок обработки персональных данных пользователей сайта banemzi.ru (далее — «Сайт»), принадлежащего ИП Банемзи (далее — «Оператор»).</p>
+              <p>1.2. Использование Сайта означает безоговорочное согласие Пользователя с настоящей Политикой и указанными в ней условиями обработки персональных данных; в случае несогласия с этими условиями Пользователь должен воздержаться от использования Сайта.</p>
+              <p>1.3. Оператор обрабатывает персональные данные Пользователей в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных» (далее — «Закон о персональных данных»).</p>
 
-              <h4 className="text-white font-semibold mt-6">2. Основные понятия, используемые в Политике</h4>
-              <p>2.1. <strong>Автоматизированная обработка персональных данных</strong> — обработка персональных данных с помощью средств вычислительной техники.</p>
-              <p>2.2. <strong>Блокирование персональных данных</strong> — временное прекращение обработки персональных данных (за исключением случаев, если обработка необходима для уточнения персональных данных).</p>
-              <p>2.3. <strong>Обезличивание персональных данных</strong> — действия, в результате которых невозможно определить без использования дополнительной информации принадлежность персональных данных конкретному Пользователю или иному субъекту персональных данных.</p>
-              <p>2.4. <strong>Обработка персональных данных</strong> — любое действие (операция) или совокупность действий (операций), совершаемых с использованием средств автоматизации или без использования таких средств с персональными данными, включая сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передачу (распространение, предоставление, доступ), обезличивание, блокирование, удаление, уничтожение персональных данных.</p>
-              <p>2.5. <strong>Оператор</strong> — государственный орган, муниципальный орган, юридическое или физическое лицо, самостоятельно или совместно с другими лицами организующие и/или осуществляющие обработку персональных данных, а также определяющие цели обработки персональных данных, состав персональных данных, подлежащих обработке, действия (операции), совершаемые с персональными данными.</p>
-              <p>2.6. <strong>Персональные данные</strong> — любая информация, относящаяся прямо или косвенно к определенному или определяемому Пользователю веб-сайта banemzi.ru</p>
-              <p>2.7. <strong>Пользователь, субъект персональных данных</strong> — любой посетитель веб-сайта banemzi.ru</p>
-              <p>2.8. <strong>Предоставление персональных данных</strong> — действия, направленные на раскрытие персональных данных определенному лицу или определенному кругу лиц.</p>
-              <p>2.9. <strong>Распространение персональных данных</strong> — любые действия, направленные на раскрытие персональных данных неопределенному кругу лиц (передача персональных данных) или на ознакомление с персональными данными неограниченного круга лиц.</p>
-              <p>2.10. <strong>Уничтожение персональных данных</strong> — любые действия, в результате которых персональные данные уничтожаются безвозвратно с невозможностью дальнейшего восстановления содержания персональных данных в информационной системе персональных данных и/или уничтожаются материальные носители персональных данных.</p>
+              <h4 className="text-white font-semibold mt-6">2. Основные понятия</h4>
+              <p>2.1. <strong>Персональные данные</strong> — любая информация, относящаяся к прямо или косвенно определенному или определяемому физическому лицу (субъекту персональных данных).</p>
+              <p>2.2. <strong>Обработка персональных данных</strong> — любое действие (операция) или совокупность действий (операций), совершаемых с использованием средств автоматизации или без использования таких средств с персональными данными, включая сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передачу (распространение, предоставление, доступ), обезличивание, блокирование, удаление, уничтожение персональных данных.</p>
+              <p>2.3. <strong>Автоматизированная обработка персональных данных</strong> — обработка персональных данных с помощью средств вычислительной техники.</p>
+              <p>2.4. <strong>Блокирование персональных данных</strong> — временное прекращение обработки персональных данных (за исключением случаев, если обработка необходима для уточнения персональных данных).</p>
+              <p>2.5. <strong>Уничтожение персональных данных</strong> — действия, в результате которых становится невозможным восстановить содержание персональных данных в информационной системе персональных данных и (или) в результате которых уничтожаются материальные носители персональных данных.</p>
 
-              <h4 className="text-white font-semibold mt-6">3. Основные права и обязанности Оператора</h4>
-              <p>3.1. <strong>Оператор имеет право:</strong></p>
+              <h4 className="text-white font-semibold mt-6">3. Цели обработки персональных данных</h4>
+              <p>3.1. Оператор обрабатывает персональные данные Пользователей в следующих целях:</p>
               <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>получать от субъекта персональных данных достоверные информацию и/или документы, содержащие персональные данные;</li>
-                <li>в случае отзыва субъектом персональных данных согласия на обработку персональных данных, а также, направления обращения с требованием о прекращении обработки персональных данных, Оператор вправе продолжить обработку персональных данных без согласия субъекта персональных данных при наличии оснований, указанных в Законе о персональных данных;</li>
-                <li>самостоятельно определять состав и перечень мер, необходимых и достаточных для обеспечения выполнения обязанностей, предусмотренных Законом о персональных данных.</li>
-              </ul>
-              
-              <p>3.2. <strong>Оператор обязан:</strong></p>
-              <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>предоставлять субъекту персональных данных по его просьбе информацию, касающуюся обработки его персональных данных;</li>
-                <li>организовывать обработку персональных данных в порядке, установленном действующим законодательством РФ;</li>
-                <li>отвечать на обращения и запросы субъектов персональных данных и их законных представителей в соответствии с требованиями Закона о персональных данных;</li>
-                <li>сообщать в уполномоченный орган по защите прав субъектов персональных данных по запросу этого органа необходимую информацию в течение 10 (десяти) рабочих дней с даты получения такого запроса;</li>
-                <li>публиковать или иным образом обеспечивать неограниченный доступ к настоящей Политике в отношении обработки персональных данных;</li>
-                <li>принимать правовые, организационные и технические меры для защиты персональных данных от неправомерного или случайного доступа к ним, уничтожения, изменения, блокирования, копирования, предоставления, распространения персональных данных, а также от иных неправомерных действий в отношении персональных данных;</li>
-                <li>прекратить обработку персональных данных в порядке и случаях, предусмотренных Законом о персональных данных;</li>
-                <li>исполнять иные обязанности, предусмотренные Законом о персональных данных.</li>
+                <li>Предоставление услуг по организации мероприятий</li>
+                <li>Связь с Пользователем для уточнения деталей заказа</li>
+                <li>Информирование о новых услугах и специальных предложениях</li>
+                <li>Улучшение качества предоставляемых услуг</li>
+                <li>Соблюдение требований законодательства Российской Федерации</li>
               </ul>
 
-              <h4 className="text-white font-semibold mt-6">4. Основные права и обязанности субъектов персональных данных</h4>
-              <p>4.1. <strong>Субъекты персональных данных имеют право:</strong></p>
+              <h4 className="text-white font-semibold mt-6">4. Категории обрабатываемых персональных данных</h4>
+              <p>4.1. Оператор обрабатывает следующие категории персональных данных Пользователей:</p>
               <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>получать информацию, касающуюся обработки его персональных данных, за исключением случаев, предусмотренных федеральными законами;</li>
-                <li>требовать от оператора уточнения его персональных данных, их блокирования или уничтожения в случае, если персональные данные являются неполными, устаревшими, неточными, незаконно полученными или не являются необходимыми для заявленной цели обработки;</li>
-                <li>выдвигать условие предварительного согласия при обработке персональных данных в целях продвижения на рынке товаров, работ и услуг;</li>
-                <li>на отзыв согласия на обработку персональных данных, а также, на направление требования о прекращении обработки персональных данных;</li>
-                <li>обжаловать в уполномоченный орган по защите прав субъектов персональных данных или в судебном порядке неправомерные действия или бездействие Оператора при обработке его персональных данных;</li>
-                <li>на осуществление иных прав, предусмотренных законодательством РФ.</li>
-              </ul>
-              
-              <p>4.2. <strong>Субъекты персональных данных обязаны:</strong></p>
-              <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>предоставлять Оператору достоверные данные о себе;</li>
-                <li>сообщать Оператору об уточнении (обновлении, изменении) своих персональных данных.</li>
+                <li>Фамилия, имя, отчество</li>
+                <li>Номер телефона</li>
+                <li>Адрес электронной почты</li>
+                <li>Telegram-аккаунт</li>
+                <li>Город проживания</li>
+                <li>Информация о предпочтениях в организации мероприятий</li>
               </ul>
 
-              <h4 className="text-white font-semibold mt-6">5. Принципы обработки персональных данных</h4>
-              <p>5.1. Обработка персональных данных осуществляется на законной и справедливой основе.</p>
-              <p>5.2. Обработка персональных данных ограничивается достижением конкретных, заранее определенных и законных целей.</p>
-              <p>5.3. Не допускается объединение баз данных, содержащих персональные данные, обработка которых осуществляется в целях, несовместимых между собой.</p>
-              <p>5.4. Обработке подлежат только персональные данные, которые отвечают целям их обработки.</p>
-              <p>5.5. Содержание и объем обрабатываемых персональных данных соответствуют заявленным целям обработки.</p>
-              <p>5.6. При обработке персональных данных обеспечивается точность персональных данных, их достаточность, а в необходимых случаях и актуальность по отношению к целям обработки персональных данных.</p>
-              <p>5.7. Хранение персональных данных осуществляется в форме, позволяющей определить субъекта персональных данных, не дольше, чем этого требуют цели обработки персональных данных.</p>
+              <h4 className="text-white font-semibold mt-6">5. Способы обработки персональных данных</h4>
+              <p>5.1. Обработка персональных данных осуществляется с использованием средств автоматизации и без использования таких средств.</p>
+              <p>5.2. Оператор принимает необходимые правовые, организационные и технические меры для защиты персональных данных от неправомерного или случайного доступа к ним, уничтожения, изменения, блокирования, копирования, предоставления, распространения персональных данных, а также от иных неправомерных действий в отношении персональных данных.</p>
 
-              <h4 className="text-white font-semibold mt-6">6. Цели обработки персональных данных</h4>
-              <p>6.1. <strong>Оператор обрабатывает персональные данные пользователей с целью:</strong></p>
-              
-              <p><strong>Предоставления Пользователю консультации об услугах, реализуемых Оператором</strong></p>
-              <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>Категория персональных данных: персональные данные, которые не относятся к биометрическим и специальным персональным данным</li>
-                <li>Перечень персональных данных: имя, электронный адрес, номер телефона, Telegram-аккаунт</li>
-                <li>Способы обработки: сбор, запись, систематизация, накопление, хранение, уничтожение и обезличивание персональных данных</li>
-                <li>Срок обработки: до достижения цели или отзыва согласия на обработку</li>
-                <li>Правовые основания: согласие на обработку персональных данных</li>
-              </ul>
-
-              <p><strong>Обработки заявок на организацию мероприятий</strong></p>
-              <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>Категория персональных данных: персональные данные, которые не относятся к биометрическим и специальным персональным данным</li>
-                <li>Перечень персональных данных: имя, электронный адрес, номер телефона, информация о мероприятии (тип, количество участников, город)</li>
-                <li>Способы обработки: сбор, запись, систематизация, накопление, хранение, уничтожение и обезличивание персональных данных</li>
-                <li>Срок обработки: до достижения цели или отзыва согласия на обработку</li>
-                <li>Правовые основания: согласие на обработку персональных данных</li>
-              </ul>
-
+              <h4 className="text-white font-semibold mt-6">6. Обработка персональных данных с использованием файлов cookie</h4>
+              <p>6.1. Оператор использует файлы cookie для:</p>
               <p><strong>Обеспечения работы сайта, а также сбор статистики посещения сайта</strong></p>
               <ul className="list-disc list-inside space-y-1 ml-4">
                 <li>Категория персональных данных: персональные данные, которые не относятся к биометрическим и специальным персональным данным</li>
@@ -422,20 +687,16 @@ export default function LeadForm() {
               <p>8.2. Персональные данные Пользователя никогда, ни при каких условиях не будут переданы третьим лицам, за исключением случаев, связанных с исполнением действующего законодательства либо в случае, если субъектом персональных данных дано согласие Оператору на передачу данных третьему лицу.</p>
               <p>8.3. В случае выявления неточностей в персональных данных, Пользователь может актуализировать их самостоятельно, путем направления Оператору уведомление на адрес электронной почты Оператора info@banemzi.ru с пометкой «Актуализация персональных данных».</p>
               <p>8.4. Срок обработки персональных данных определяется достижением целей, для которых были собраны персональные данные, если иной срок не предусмотрен договором или действующим законодательством.</p>
-              <p>8.5. Пользователь может в любой момент отозвать свое согласие на обработку персональных данных, направив Оператору уведомление посредством электронной почты на электронный адрес Оператора info@banemzi.ru с пометкой «Отзыв согласия на обработку персональных данных».</p>
-              <p>8.6. Оператор осуществляет хранение персональных данных в форме, позволяющей определить субъекта персональных данных, не дольше, чем этого требуют цели обработки персональных данных.</p>
-              <p>8.7. Условием прекращения обработки персональных данных может являться достижение целей обработки персональных данных, отзыв согласия субъектом персональных данных или требование о прекращении обработки персональных данных, а также выявление неправомерной обработки персональных данных.</p>
+              <p>Пользователь может в любой момент отозвать свое согласие на обработку персональных данных, направив Оператору уведомление посредством электронной почты на электронный адрес Оператора info@banemzi.ru с пометкой «Отзыв согласия на обработку персональных данных».</p>
 
-              <h4 className="text-white font-semibold mt-6">9. Перечень действий, производимых Оператором с полученными персональными данными</h4>
-              <p>9.1. Оператор осуществляет сбор, запись, систематизацию, накопление, хранение, обезличивание и уничтожение персональных данных.</p>
-              <p>9.2. Оператор осуществляет автоматизированную обработку персональных данных с получением и/или передачей полученной информации по информационно-телекоммуникационным сетям или без таковой.</p>
+              <h4 className="text-white font-semibold mt-6">9. Трансграничная передача персональных данных</h4>
+              <p>9.1. Оператор до начала осуществления трансграничной передачи персональных данных обязан убедиться в том, что иностранным государством, на территорию которого предполагается осуществлять передачу персональных данных, обеспечивается надежная защита прав субъектов персональных данных.</p>
+              <p>9.2. Трансграничная передача персональных данных на территории иностранных государств, не отвечающих вышеуказанным требованиям, может осуществляться только в случае наличия согласия в письменной форме субъекта персональных данных на трансграничную передачу его персональных данных и/или исполнения договора, стороной которого является субъект персональных данных.</p>
 
-              <h4 className="text-white font-semibold mt-6">10. Конфиденциальность персональных данных</h4>
-              <p>Оператор и иные лица, получившие доступ к персональным данным, обязаны не раскрывать третьим лицам и не распространять персональные данные без согласия субъекта персональных данных, если иное не предусмотрено федеральным законом.</p>
-
-              <h4 className="text-white font-semibold mt-6">11. Заключительные положения</h4>
-              <p>11.1. Пользователь может получить любые разъяснения по интересующим вопросам, касающимся обработки его персональных данных, обратившись к Оператору с помощью электронной почты info@banemzi.ru</p>
-              <p>11.2. В данном документе будут отражены любые изменения политики обработки персональных данных Оператором. Политика действует бессрочно до замены ее новой версией.</p>
+              <h4 className="text-white font-semibold mt-6">10. Заключительные положения</h4>
+              <p>10.1. Пользователь может получить любые разъяснения по интересующим вопросам, касающимся обработки его персональных данных, обратившись к Оператору с помощью электронной почты info@banemzi.ru</p>
+              <p>10.2. В данном документе будут отражены любые изменения политики обработки персональных данных Оператором. Политика действует бессрочно до замены ее новой версией.</p>
+              <p>10.3. Актуальная версия Политики в свободном доступе расположена в сети Интернет по адресу banemzi.ru/privacy-policy</p>
             </div>
           </div>
         </div>,
@@ -452,32 +713,22 @@ export default function LeadForm() {
             }
           }}
         >
-          <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[90vh] overflow-y-auto border border-white/10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Согласие на обработку персональных данных</h3>
+          <div className="bg-gray-900 rounded-2xl max-w-5xl max-h-[95vh] overflow-y-auto scrollbar-thin">
+            <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-6 flex justify-between items-center">
+              <h3 className="text-2xl font-bold text-white">Согласие на обработку персональных данных</h3>
               <button 
                 onClick={() => setShowConsentDoc(false)}
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <div className="text-white/80 space-y-4 text-sm leading-relaxed modal-content">
+            <div className="text-white/80 space-y-4 text-sm leading-relaxed modal-content p-6">
               <p>Я, субъект персональных данных, в соответствии с Федеральным законом от 27 июля 2006 года № 152-ФЗ «О персональных данных» предоставляю согласие на обработку персональных данных, указанных мной на страницах сайта banemzi.ru в сети «Интернет», при заполнении веб-форм, характер информации которых предполагает или допускает включение в них следующих персональных данных: фамилия, имя, отчество, адрес электронной почты, номер телефона, Telegram-аккаунт, с целью получения информации о продуктах и услугах Оператора, специальных предложениях и различных событиях Оператора, хранения данных и администрирования системы.</p>
               
-              <p>Согласие предоставляется на совершение следующих действий (операций) с указанными в настоящем согласии персональными данными: сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передачу (предоставление, доступ), блокирование, удаление, уничтожение, осуществляемых как с использованием средств автоматизации (автоматизированная обработка), так и без использования таких средств (неавтоматизированная обработка).</p>
-              
-              <p>Я подтверждаю, что ознакомлен с требованиями законодательства Российской Федерации, устанавливающими порядок обработки персональных данных, с политикой Оператора в отношении обработки персональных данных, а также с моими правами и обязанностями в этой области.</p>
-              
-              <p>Согласие вступает в силу с момента предоставления согласия и действует по достижении целей обработки или случая утраты необходимости в достижении этих целей.</p>
-              
-              <p>Согласие может быть отозвано мною в любое время на основании моего письменного заявления, направленного на электронный адрес info@banemzi.ru с пометкой «Отзыв согласия на обработку персональных данных».</p>
-              
-              <p>Я понимаю и соглашаюсь с тем, что предоставленная информация, является полной, точной и достоверной; при предоставлении информации не нарушается действующее законодательство Российской Федерации, законные права и интересы третьих лиц; вся предоставленная информация заполнена мною в отношении себя лично; информация не относится к государственной, банковской и/или коммерческой тайне, информация не относится к информации о расовой и/или национальной принадлежности, политических взглядах, религиозных или философских убеждениях, не относится к информации о состоянии здоровья и интимной жизни.</p>
-              
-              <p>Я понимаю и соглашаюсь с тем, что Оператор не проверяет достоверность персональных данных, предоставляемых мной, и не имеет возможности оценивать мою дееспособность и исходит из того, что я предоставляю достоверные персональные данные и поддерживаю такие данные в актуальном состоянии.</p>
+              <p>Настоящее согласие предоставляется на осуществление любых действий в отношении моих персональных данных, которые необходимы или желаемы для достижения указанных целей, включая (без ограничения) сбор, систематизацию, накопление, хранение, уточнение (обновление, изменение), использование, распространение (в том числе передачу), обезличивание, блокирование, уничтожение персональных данных, а также осуществление любых иных действий, предусмотренных действующим законодательством Российской Федерации.</p>
               
               <p>Я подтверждаю, что ознакомлен с <button onClick={() => {setShowConsentDoc(false); setShowPolicy(true);}} className="text-cyan-400 hover:text-cyan-300 underline">Политикой конфиденциальности</button> и даю согласие на обработку персональных данных.</p>
             </div>
@@ -485,8 +736,6 @@ export default function LeadForm() {
         </div>,
         document.body
       )}
-    </div>
+    </Reveal>
   );
 }
-
-

@@ -21,6 +21,7 @@ export default function ParallaxElement({
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
+    // @ts-ignore
     offset: offset
   });
 

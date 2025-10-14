@@ -1,5 +1,7 @@
 import Reveal from './Reveal';
 import AnimatedCounter from './AnimatedCounter';
+import CitiesMap from './CitiesMap';
+import DreamEvent from './DreamEvent';
 
 export function Services() {
   const items = [
@@ -392,6 +394,24 @@ export function FinalCTA() {
           </div>
         </div>
       </Reveal>
+    </section>
+  );
+}
+
+export function Cities() {
+  return (
+    <section id="cities" className="py-16 sm:py-20">
+      <Reveal>
+        <CitiesMap />
+      </Reveal>
+    </section>
+  );
+}
+
+export function DreamEventSection() {
+  return (
+    <section id="dream-event" className="py-16 sm:py-20">
+      <DreamEvent />
     </section>
   );
 }

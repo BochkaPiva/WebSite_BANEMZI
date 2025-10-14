@@ -541,7 +541,7 @@ export default function Footer() {
                 alt="BANEMZI" 
                 className="h-20 w-auto mx-auto mb-4 opacity-80"
               />
-              <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00] text-lg font-bold whitespace-nowrap">
+              <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00] text-lg font-bold text-center leading-relaxed">
                 Создаем мероприятия, которые запоминаются. От идеи до шоу.
               </p>
             </div>
