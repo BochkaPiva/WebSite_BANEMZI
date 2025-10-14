@@ -103,8 +103,9 @@ function humanizeCallback(callback: { type: string; atUtc?: string }): string {
 async function notifyTelegram(data: Record<string, unknown>) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
+  const topicId = process.env.TELEGRAM_TOPIC_ID; // ID топика для заявок
   
-  console.log('Telegram notification attempt:', { botToken: !!botToken, chatId });
+  console.log('Telegram notification attempt:', { botToken: !!botToken, chatId, topicId });
   
   if (!botToken || !chatId) {
     console.error('Telegram credentials not configured');
@@ -121,14 +122,22 @@ async function notifyTelegram(data: Record<string, unknown>) {
   console.log('Telegram message:', message);
 
   try {
+    const requestBody: any = {
+      chat_id: chatId,
+      text: message,
+      parse_mode: 'HTML'
+    };
+
+    // Если указан ID топика, отправляем в топик
+    if (topicId) {
+      requestBody.message_thread_id = parseInt(topicId);
+      console.log('Sending to topic:', topicId);
+    }
+
     const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        parse_mode: 'HTML'
-      })
+      body: JSON.stringify(requestBody)
     });
     
     const responseText = await response.text();
