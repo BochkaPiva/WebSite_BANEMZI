@@ -9,6 +9,13 @@ html, body {
   box-sizing: border-box;
 }
 
+/* Minimal fallback for users without Tailwind - only applies if no Tailwind classes are present */
+body:not([class*="bg-"]):not([class*="text-"]) {
+  background-color: #000000;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
 /* Hide reCAPTCHA elements */
 .g-recaptcha,
 .grecaptcha-badge,
