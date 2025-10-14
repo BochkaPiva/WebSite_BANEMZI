@@ -19,7 +19,12 @@ export default function Hero() {
           playsInline
           controls={false}
           poster="/hero-poster.jpg"
-          style={{ height: '100vh !important', minHeight: '100vh !important', objectPosition: 'center bottom' }}
+          style={{ 
+            height: '100vh !important', 
+            minHeight: '100vh !important', 
+            objectPosition: 'center bottom',
+            pointerEvents: 'none'
+          }}
         />
       </ParallaxElement>
       {/* Затемнение для читаемости */}
