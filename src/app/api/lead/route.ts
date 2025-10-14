@@ -100,7 +100,7 @@ function humanizeCallback(callback: { type: string; atUtc?: string }): string {
   return 'не указано';
 }
 
-async function notifyTelegram(data: any) {
+async function notifyTelegram(data: Record<string, unknown>) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   
@@ -135,7 +135,7 @@ async function notifyTelegram(data: any) {
   }
 }
 
-async function copyToGoogleSheet(data: any) {
+async function copyToGoogleSheet(data: Record<string, unknown>) {
   const spreadsheetId = process.env.SHEETS_SPREADSHEET_ID;
   const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
   

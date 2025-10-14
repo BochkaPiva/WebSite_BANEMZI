@@ -25,18 +25,22 @@ export default function ParallaxElement({
   });
 
   // Вычисляем направление движения
+  const upTransform = useTransform(scrollYProgress, [0, 1], [0, -100 * speed]);
+  const downTransform = useTransform(scrollYProgress, [0, 1], [0, 100 * speed]);
+  const leftTransform = useTransform(scrollYProgress, [0, 1], [0, -100 * speed]);
+  const rightTransform = useTransform(scrollYProgress, [0, 1], [0, 100 * speed]);
+  const baseTransform = useTransform(scrollYProgress, [0, 1], [0, 100 * speed]);
+  
   const getTransform = () => {
-    const baseTransform = useTransform(scrollYProgress, [0, 1], [0, 100 * speed]);
-    
     switch (direction) {
       case 'up':
-        return useTransform(scrollYProgress, [0, 1], [0, -100 * speed]);
+        return upTransform;
       case 'down':
-        return useTransform(scrollYProgress, [0, 1], [0, 100 * speed]);
+        return downTransform;
       case 'left':
-        return useTransform(scrollYProgress, [0, 1], [0, -100 * speed]);
+        return leftTransform;
       case 'right':
-        return useTransform(scrollYProgress, [0, 1], [0, 100 * speed]);
+        return rightTransform;
       default:
         return baseTransform;
     }
