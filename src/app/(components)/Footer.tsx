@@ -1,8 +1,13 @@
 "use client";
 
+import { useState } from 'react';
 import Reveal from './Reveal';
 
 export default function Footer() {
+  const [showPolicy, setShowPolicy] = useState(false);
+  const [showConsent, setShowConsent] = useState(false);
+  const [showCookies, setShowCookies] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
 
   const contacts = [
     {
@@ -61,6 +66,192 @@ export default function Footer() {
     }
   ];
 
+  const PolicyModal = () => (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#111] rounded-2xl p-6 max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold">Политика конфиденциальности</h3>
+          <button 
+            onClick={() => setShowPolicy(false)}
+            className="text-white/60 hover:text-white transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="text-white/80 space-y-4 text-sm">
+          <p><strong>Дата обновления:</strong> 14 октября 2025 г.</p>
+          
+          <h4 className="text-white font-semibold mt-6">1. Общие положения</h4>
+          <p>Настоящая Политика конфиденциальности определяет порядок обработки персональных данных пользователей сайта banemzi.ru в соответствии с Федеральным законом № 152-ФЗ «О персональных данных».</p>
+          
+          <h4 className="text-white font-semibold mt-6">2. Категории персональных данных</h4>
+          <p><strong>Мы обрабатываем следующие данные:</strong></p>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>Контактная информация (имя, телефон, email, Telegram)</li>
+            <li>Информация о мероприятии (тип, количество участников, город)</li>
+            <li>Технические данные (IP-адрес, браузер, устройство)</li>
+          </ul>
+          
+          <h4 className="text-white font-semibold mt-6">3. Цели обработки</h4>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>Обработка заявок на мероприятия</li>
+            <li>Связь с клиентами</li>
+            <li>Предоставление услуг</li>
+            <li>Учет и аналитика</li>
+          </ul>
+          
+          <h4 className="text-white font-semibold mt-6">4. Ваши права</h4>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>Получать информацию об обработке данных</li>
+            <li>Требовать исправления или удаления</li>
+            <li>Отзывать согласие на обработку</li>
+          </ul>
+          
+          <p className="mt-6"><strong>По вопросам:</strong> info@banemzi.ru</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const ConsentModal = () => (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#111] rounded-2xl p-6 max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold">Согласие на обработку персональных данных</h3>
+          <button 
+            onClick={() => setShowConsent(false)}
+            className="text-white/60 hover:text-white transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="text-white/80 space-y-4 text-sm">
+          <p>Настоящим я даю согласие на обработку моих персональных данных в соответствии с Федеральным законом № 152-ФЗ «О персональных данных».</p>
+          
+          <h4 className="text-white font-semibold mt-6">Согласие предоставляется на:</h4>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>Сбор, хранение и обработку персональных данных</li>
+            <li>Использование данных для связи и предоставления услуг</li>
+            <li>Передачу данных для обработки заявок</li>
+            <li>Отправку уведомлений</li>
+          </ul>
+          
+          <h4 className="text-white font-semibold mt-6">Срок действия:</h4>
+          <p>До отзыва согласия субъектом персональных данных.</p>
+          
+          <h4 className="text-white font-semibold mt-6">Способы отзыва:</h4>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>По email: info@banemzi.ru</li>
+            <li>В Telegram: @banemzi</li>
+          </ul>
+          
+          <p className="mt-6">Я подтверждаю, что ознакомлен с Политикой конфиденциальности и даю согласие на обработку персональных данных.</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const CookiesModal = () => (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#111] rounded-2xl p-6 max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold">Правила обработки cookie</h3>
+          <button 
+            onClick={() => setShowCookies(false)}
+            className="text-white/60 hover:text-white transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="text-white/80 space-y-4 text-sm">
+          <p>Наш сайт использует файлы cookie для улучшения пользовательского опыта и анализа трафика.</p>
+          
+          <h4 className="text-white font-semibold mt-6">Типы используемых cookie:</h4>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li><strong>Необходимые</strong> - обеспечивают базовую функциональность</li>
+            <li><strong>Аналитические</strong> - помогают понять использование сайта</li>
+            <li><strong>Функциональные</strong> - запоминают предпочтения</li>
+          </ul>
+          
+          <h4 className="text-white font-semibold mt-6">Управление cookie:</h4>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>Вы можете отключить cookie в настройках браузера</li>
+            <li>Отключение может повлиять на функциональность</li>
+            <li>Мы не используем cookie для сбора данных без согласия</li>
+          </ul>
+          
+          <h4 className="text-white font-semibold mt-6">Сторонние сервисы:</h4>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>Системы защиты от спама</li>
+            <li>Сервисы обработки заявок</li>
+            <li>Системы уведомлений</li>
+          </ul>
+          
+          <p className="mt-6">Продолжая использовать сайт, вы соглашаетесь с использованием cookie.</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const TermsModal = () => (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#111] rounded-2xl p-6 max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold">Пользовательское соглашение</h3>
+          <button 
+            onClick={() => setShowTerms(false)}
+            className="text-white/60 hover:text-white transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="text-white/80 space-y-4 text-sm">
+          <p>Настоящее соглашение регулирует отношения между пользователями сайта banemzi.ru и компанией BANEMZI.</p>
+          
+          <h4 className="text-white font-semibold mt-6">Наши услуги:</h4>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>Организация корпоративных мероприятий</li>
+            <li>Проведение тимбилдингов</li>
+            <li>Консультации по планированию мероприятий</li>
+            <li>Полный цикл услуг от идеи до реализации</li>
+          </ul>
+          
+          <h4 className="text-white font-semibold mt-6">Использование сайта:</h4>
+          <p><strong>Разрешено:</strong></p>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>Просмотр информации о услугах</li>
+            <li>Подача заявок на мероприятия</li>
+            <li>Связь для обсуждения деталей</li>
+          </ul>
+          
+          <p><strong>Запрещено:</strong></p>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>Использование в незаконных целях</li>
+            <li>Попытки взлома сайта</li>
+            <li>Распространение вредоносного ПО</li>
+            <li>Спам или массовые рассылки</li>
+          </ul>
+          
+          <h4 className="text-white font-semibold mt-6">Ответственность:</h4>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>Пользователь несет ответственность за достоверность данных</li>
+            <li>Мы не гарантируем бесперебойную работу сайта</li>
+            <li>Все споры решаются в соответствии с законодательством РФ</li>
+          </ul>
+          
+          <p className="mt-6"><strong>По вопросам:</strong> info@banemzi.ru</p>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -108,41 +299,33 @@ export default function Footer() {
           {/* Документы */}
           <Reveal delay={0.15}>
             <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-8">
-              <a
-                href="/documents/privacy-policy.html"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => setShowPolicy(true)}
                 className="text-white/60 hover:text-white transition-colors text-sm underline"
               >
                 Политика конфиденциальности
-              </a>
+              </button>
               <span className="text-white/40">|</span>
-              <a
-                href="/documents/cookies-policy.html"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => setShowCookies(true)}
                 className="text-white/60 hover:text-white transition-colors text-sm underline"
               >
                 Правила обработки cookie
-              </a>
+              </button>
               <span className="text-white/40">|</span>
-              <a
-                href="/documents/consent.html"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => setShowConsent(true)}
                 className="text-white/60 hover:text-white transition-colors text-sm underline"
               >
                 Согласие на обработку данных
-              </a>
+              </button>
               <span className="text-white/40">|</span>
-              <a
-                href="/documents/terms-of-service.html"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => setShowTerms(true)}
                 className="text-white/60 hover:text-white transition-colors text-sm underline"
               >
                 Пользовательское соглашение
-              </a>
+              </button>
             </div>
           </Reveal>
 
@@ -160,6 +343,11 @@ export default function Footer() {
         </div>
       </footer>
 
+      {/* Модальные окна */}
+      {showPolicy && <PolicyModal />}
+      {showConsent && <ConsentModal />}
+      {showCookies && <CookiesModal />}
+      {showTerms && <TermsModal />}
     </>
   );
 }
