@@ -1,71 +1,28 @@
 "use client";
 
 import { useState } from 'react';
-import Reveal from './Reveal';
 
-export default function Footer() {
-  const [showPolicy, setShowPolicy] = useState(false);
-  const [showConsent, setShowConsent] = useState(false);
-  const [showCookies, setShowCookies] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
+interface LegalModalsProps {
+  showPolicy: boolean;
+  showConsent: boolean;
+  showCookies: boolean;
+  showTerms: boolean;
+  setShowPolicy: (show: boolean) => void;
+  setShowConsent: (show: boolean) => void;
+  setShowCookies: (show: boolean) => void;
+  setShowTerms: (show: boolean) => void;
+}
 
-  const contacts = [
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="url(#emailGradient)" viewBox="0 0 24 24">
-          <defs>
-            <linearGradient id="emailGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#FFD166" />
-              <stop offset="50%" stopColor="#FF9A3C" />
-              <stop offset="100%" stopColor="#FF6B00" />
-            </linearGradient>
-          </defs>
-          <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-        </svg>
-      ),
-      label: 'Email',
-      value: 'info@banemzi.ru',
-      href: 'mailto:info@banemzi.ru',
-      color: 'text-orange-400'
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="url(#phoneGradient)" viewBox="0 0 24 24">
-          <defs>
-            <linearGradient id="phoneGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#FFD166" />
-              <stop offset="50%" stopColor="#FF9A3C" />
-              <stop offset="100%" stopColor="#FF6B00" />
-            </linearGradient>
-          </defs>
-          <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-        </svg>
-      ),
-      label: 'Телефон',
-      value: '+7 (___) ___‑__‑__',
-      href: 'tel:+7',
-      color: 'text-orange-400'
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="url(#telegramGradient)" viewBox="0 0 24 24">
-          <defs>
-            <linearGradient id="telegramGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#FFD166" />
-              <stop offset="50%" stopColor="#FF9A3C" />
-              <stop offset="100%" stopColor="#FF6B00" />
-            </linearGradient>
-          </defs>
-          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-        </svg>
-      ),
-      label: 'Telegram',
-      value: '@banemzi',
-      href: 'https://t.me/banemzi',
-      color: 'text-orange-400'
-    }
-  ];
-
+export default function LegalModals({
+  showPolicy,
+  showConsent,
+  showCookies,
+  showTerms,
+  setShowPolicy,
+  setShowConsent,
+  setShowCookies,
+  setShowTerms
+}: LegalModalsProps) {
   const PolicyModal = () => (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10">
@@ -245,303 +202,10 @@ export default function Footer() {
     </div>
   );
 
-  const CookiesModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Правила обработки cookie</h3>
-          <button 
-            onClick={() => setShowCookies(false)}
-            className="text-white/60 hover:text-white transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div className="text-white/80 space-y-4 text-sm leading-relaxed">
-          <h4 className="text-white font-semibold">1. На этом веб-сайте используются файлы cookie</h4>
-          <p>Используя этот веб-сайт, Вы даете согласие на обработку файлов cookie, пользовательских данных (сведения о местоположении; тип и версия ОС; тип и версия Браузера; тип устройства и разрешение его экрана; источник откуда пользователь перешел на сайт; с какого сайта или по какой рекламе; язык ОС и Браузера; какие страницы открывает и на какие кнопки нажимает пользователь; ip-адрес) в целях функционирования сайта, проведения ретаргетинга и проведения статистических исследований и обзоров. Если Вы не хотите, чтобы Ваши данные обрабатывались, Вы должны покинуть данный сайт.</p>
-          
-          <h4 className="text-white font-semibold mt-6">2. О файлах cookie</h4>
-          <p>На этом веб-сайте используются файлы cookie. Cookie — это небольшой простой файл (строка из букв и цифр), который отправляется вместе со страницами веб-сайта и сохраняется браузером на жестком диске вашего компьютера. При последующих посещениях информация из этого файла, может быть отправлена обратно на наши серверы.</p>
-          <p>Веб-серверы могут с помощью файлов cookie идентифицировать и отслеживать пользователей при просмотре различных страниц веб-сайта, а также определять, посещали ли они его ранее.</p>
-          
-          <h4 className="text-white font-semibold mt-6">3. Файлы cookie и персональные данные</h4>
-          <p>Файлы cookie, которые мы сохраняем через свой веб-сайт, не содержат каких-либо сведений, позволяющих установить вашу личность.</p>
-          
-          <h4 className="text-white font-semibold mt-6">4. Включение, отключение и удаление файлов cookie</h4>
-          <p>Более подробную информацию о включении, отключении и удалении файлов cookie можно найти в инструкциях к вашему браузеру или в его справке.</p>
-          
-          <h4 className="text-white font-semibold mt-6">5. Дополнительные сведения о файлах cookie</h4>
-          <p>Дополнительные сведения о файлах cookie можно найти в Википедии, или других веб-сайтах.</p>
-          
-          <h4 className="text-white font-semibold mt-6">6. Типы используемых cookie</h4>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li><strong>Необходимые cookie</strong> — обеспечивают базовую функциональность сайта</li>
-            <li><strong>Аналитические cookie</strong> — помогают понять, как пользователи взаимодействуют с сайтом</li>
-            <li><strong>Функциональные cookie</strong> — запоминают ваши предпочтения и настройки</li>
-            <li><strong>Рекламные cookie</strong> — используются для показа релевантной рекламы (в настоящее время не используются)</li>
-          </ul>
-          
-          <h4 className="text-white font-semibold mt-6">7. Управление cookie</h4>
-          <p>Вы можете управлять cookie следующими способами:</p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Настройки браузера — большинство браузеров позволяют просматривать, удалять и блокировать cookie</li>
-            <li>Баннер согласия — при первом посещении вы можете настроить предпочтения</li>
-            <li>Отключение cookie может повлиять на функциональность сайта</li>
-          </ul>
-          
-          <h4 className="text-white font-semibold mt-6">8. Сторонние сервисы</h4>
-          <p>Наш сайт может использовать сторонние сервисы, которые также используют cookie:</p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Системы защиты от спама и ботов</li>
-            <li>Сервисы обработки заявок</li>
-            <li>Системы уведомлений</li>
-            <li>Аналитические сервисы</li>
-          </ul>
-          
-          <h4 className="text-white font-semibold mt-6">9. Контактная информация</h4>
-          <p>По вопросам, связанным с использованием cookie, обращайтесь: info@banemzi.ru</p>
-        </div>
-      </div>
-    </div>
-  );
-
-  const TermsModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] rounded-2xl p-6 max-w-5xl max-h-[95vh] overflow-y-auto border border-white/10">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Пользовательское соглашение</h3>
-          <button 
-            onClick={() => setShowTerms(false)}
-            className="text-white/60 hover:text-white transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div className="text-white/80 space-y-4 text-sm leading-relaxed">
-          <h4 className="text-white font-semibold">1. Общие положения</h4>
-          <p>Настоящее Пользовательское соглашение (далее — «Соглашение») регулирует отношения между пользователями сайта banemzi.ru (далее — «Сайт») и компанией BANEMZI (далее — «Компания», «мы»).</p>
-          <p>Используя Сайт, вы соглашаетесь с условиями настоящего Соглашения. Если вы не согласны с какими-либо условиями, пожалуйста, не используйте Сайт.</p>
-          
-          <h4 className="text-white font-semibold mt-6">2. Информация о компании</h4>
-          <p><strong>BANEMZI</strong><br>
-          Email: info@banemzi.ru<br>
-          Telegram: @banemzi<br>
-          Сайт: banemzi.ru<br>
-          Сфера деятельности: Организация корпоративных мероприятий и тимбилдингов</p>
-          
-          <h4 className="text-white font-semibold mt-6">3. Описание услуг</h4>
-          <p><strong>Мы предоставляем следующие услуги:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Корпоративные мероприятия: организация праздников, юбилеев, корпоративов</li>
-            <li>Тимбилдинг: командообразующие мероприятия и активности</li>
-            <li>Консультации: помощь в планировании и организации мероприятий</li>
-            <li>Полный цикл услуг: от идеи до реализации мероприятия</li>
-          </ul>
-          
-          <h4 className="text-white font-semibold mt-6">4. Использование сайта</h4>
-          <p><strong>4.1. Разрешенное использование:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Просмотр информации о наших услугах</li>
-            <li>Подача заявок на организацию мероприятий</li>
-            <li>Связь с нами для обсуждения деталей</li>
-            <li>Получение консультаций по организации мероприятий</li>
-          </ul>
-          
-          <p><strong>4.2. Запрещенное использование:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Использование сайта в незаконных целях</li>
-            <li>Попытки взлома или нарушения работы сайта</li>
-            <li>Распространение вредоносного программного обеспечения</li>
-            <li>Спам или массовая рассылка сообщений</li>
-            <li>Нарушение авторских прав или интеллектуальной собственности</li>
-          </ul>
-          
-          <h4 className="text-white font-semibold mt-6">5. Подача заявок</h4>
-          <p><strong>5.1. Процесс подачи заявки:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Заполнение формы на сайте</li>
-            <li>Указание контактных данных</li>
-            <li>Описание параметров мероприятия</li>
-            <li>Согласие на обработку персональных данных</li>
-          </ul>
-          
-          <p><strong>5.2. Обработка заявок:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Мы обрабатываем заявки в течение 24 часов в рабочие дни</li>
-            <li>Связываемся с вами для уточнения деталей</li>
-            <li>Предоставляем коммерческое предложение</li>
-            <li>Заключаем договор на оказание услуг</li>
-          </ul>
-          
-          <h4 className="text-white font-semibold mt-6">6. Интеллектуальная собственность</h4>
-          <p>Все материалы, размещенные на Сайте, включая:</p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Тексты, изображения, логотипы</li>
-            <li>Дизайн и структуру сайта</li>
-            <li>Программное обеспечение</li>
-            <li>Торговые марки и знаки</li>
-          </ul>
-          <p>Являются объектами интеллектуальной собственности и защищены законодательством РФ.</p>
-          
-          <h4 className="text-white font-semibold mt-6">7. Ответственность</h4>
-          <p><strong>7.1. Ограничение ответственности:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Мы не несем ответственности за ущерб, причиненный использованием сайта</li>
-            <li>Не гарантируем бесперебойную работу сайта</li>
-            <li>Не отвечаем за действия третьих лиц</li>
-          </ul>
-          
-          <p><strong>7.2. Ответственность пользователя:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Пользователь несет ответственность за достоверность предоставленных данных</li>
-            <li>Обязан соблюдать условия настоящего Соглашения</li>
-            <li>Несет ответственность за нарушения, совершенные с его аккаунта</li>
-          </ul>
-          
-          <h4 className="text-white font-semibold mt-6">8. Конфиденциальность</h4>
-          <p>Обработка персональных данных регулируется:</p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Политикой конфиденциальности</li>
-            <li>Согласием на обработку персональных данных</li>
-            <li>Федеральным законом № 152-ФЗ «О персональных данных»</li>
-          </ul>
-          
-          <h4 className="text-white font-semibold mt-6">9. Изменения в соглашении</h4>
-          <p>Мы оставляем за собой право изменять условия настоящего Соглашения. О существенных изменениях мы уведомим:</p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Через уведомление на сайте</li>
-            <li>По email (если у нас есть ваш адрес)</li>
-            <li>В Telegram (если вы подписаны на наш канал)</li>
-          </ul>
-          <p>Продолжение использования сайта после внесения изменений означает ваше согласие с новыми условиями.</p>
-          
-          <h4 className="text-white font-semibold mt-6">10. Прекращение действия соглашения</h4>
-          <p>Соглашение может быть прекращено:</p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>По инициативе пользователя (прекращение использования сайта)</li>
-            <li>По инициативе компании (нарушение условий соглашения)</li>
-            <li>В случае изменения законодательства</li>
-          </ul>
-          
-          <h4 className="text-white font-semibold mt-6">11. Разрешение споров</h4>
-          <p>Все споры, возникающие в связи с использованием сайта, решаются:</p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>В первую очередь — путем переговоров</li>
-            <li>При невозможности достижения соглашения — в судебном порядке</li>
-            <li>В соответствии с законодательством Российской Федерации</li>
-          </ul>
-          
-          <h4 className="text-white font-semibold mt-6">12. Контактная информация</h4>
-          <p>По всем вопросам, связанным с использованием сайта и настоящим Соглашением, обращайтесь:</p>
-          <p><strong>Email:</strong> info@banemzi.ru<br>
-          <strong>Telegram:</strong> @banemzi</p>
-          
-          <p className="mt-6"><strong>⚠️ ВАЖНО:</strong> Используя наш сайт, вы подтверждаете, что прочитали, поняли и согласны с условиями настоящего Пользовательского соглашения.</p>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <>
-      <footer className="border-t border-white/10 bg-[#0A0A0A]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-          {/* Логотип и описание */}
-          <Reveal>
-            <div className="text-center mb-8">
-              <img 
-                src="/BANEMZI.png" 
-                alt="BANEMZI" 
-                className="h-20 w-auto mx-auto mb-4 opacity-80"
-              />
-              <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00] text-lg font-bold whitespace-nowrap">
-                Создаем мероприятия, которые запоминаются. От идеи до шоу.
-              </p>
-            </div>
-          </Reveal>
-
-          {/* Контакты */}
-          <Reveal delay={0.1}>
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              {contacts.map((contact, index) => (
-                <a
-                  key={contact.label}
-                  href={contact.href}
-                  className="group flex items-center space-x-3 p-4 rounded-xl border border-white/10 bg-[#111] hover:border-white/20 transition-all duration-300 hover:bg-[#1a1a1a]"
-                >
-                  <div className={`${contact.color} group-hover:scale-110 transition-transform duration-300`}>
-                    {contact.icon}
-                  </div>
-                  <div>
-                    <div className="text-white/60 text-xs uppercase tracking-wide">
-                      {contact.label}
-                    </div>
-                    <div className="text-white font-medium">
-                      {contact.value}
-                    </div>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </Reveal>
-
-          {/* Документы */}
-          <Reveal delay={0.15}>
-            <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-8">
-              <button
-                onClick={() => setShowPolicy(true)}
-                className="text-white/60 hover:text-white transition-colors text-sm underline"
-              >
-                Политика конфиденциальности
-              </button>
-              <span className="text-white/40">|</span>
-              <button
-                onClick={() => setShowCookies(true)}
-                className="text-white/60 hover:text-white transition-colors text-sm underline"
-              >
-                Правила обработки cookie
-              </button>
-              <span className="text-white/40">|</span>
-              <button
-                onClick={() => setShowConsent(true)}
-                className="text-white/60 hover:text-white transition-colors text-sm underline"
-              >
-                Согласие на обработку данных
-              </button>
-              <span className="text-white/40">|</span>
-              <button
-                onClick={() => setShowTerms(true)}
-                className="text-white/60 hover:text-white transition-colors text-sm underline"
-              >
-                Пользовательское соглашение
-              </button>
-            </div>
-          </Reveal>
-
-          {/* Разделитель */}
-          <Reveal delay={0.2}>
-            <div className="border-t border-white/10 pt-8">
-              <div className="text-center">
-                {/* Копирайт */}
-                <div className="text-white/40 text-sm">
-                  © 2024 BANEMZI. Все права защищены.
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </footer>
-
-      {/* Модальные окна */}
       {showPolicy && <PolicyModal />}
       {showConsent && <ConsentModal />}
-      {showCookies && <CookiesModal />}
-      {showTerms && <TermsModal />}
     </>
   );
 }

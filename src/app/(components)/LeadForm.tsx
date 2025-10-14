@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import { RU_CITIES, filterCities } from '@/data/cities';
+import LegalModals from './LegalModals';
 
 type Step1 = { eventType: 'corporate' | 'teambuilding'; city: string; guestsBucket: 'lt20' | '20_50' | '50_200' | '200_500' | '500p' };
 type Callback = { type: 'asap' | 'slot'; atUtc?: string };
@@ -199,7 +200,7 @@ export default function LeadForm() {
           <label className="flex items-start gap-3 text-sm text-white/70">
             <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1" />
             <span>
-              Согласен с <a href="#" onClick={(e) => { e.preventDefault(); setShowPolicy(true); }} className="underline">политикой конфиденциальности</a>. Текст согласия — <a href="#" onClick={(e) => { e.preventDefault(); setShowConsentDoc(true); }} className="underline">здесь</a>.
+              Согласен с <a href="#" onClick={(e) => { e.preventDefault(); setShowPolicy(true); }} className="underline">политикой конфиденциальности</a> и <a href="#" onClick={(e) => { e.preventDefault(); setShowConsentDoc(true); }} className="underline">согласием на обработку персональных данных</a>.
             </span>
           </label>
           {message && (
@@ -213,38 +214,17 @@ export default function LeadForm() {
           )}
         </div>
       )}
-      {/* Политика (модалка) */}
-      {showPolicy && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowPolicy(false)}>
-          <div className="max-w-3xl w-full mx-4 rounded-2xl bg-[#111] border border-white/10 p-6 text-white" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Политика конфиденциальности</h2>
-              <button onClick={() => setShowPolicy(false)} className="text-white/70 hover:text-white">✕</button>
-            </div>
-            <div className="space-y-3 text-white/80 max-h-[60vh] overflow-auto">
-              <p>Этот документ описывает цели и порядок обработки персональных данных, собираемых через формы на сайте. Оператор — BANEMZI (юр. данные будут добавлены позже). Первичное хранение — на сервере в РФ (SQLite). Данные используются только для обратной связи по заявке.</p>
-              <p>Допускается трансграничная передача данных в сервисы уведомлений и копирования (например, Telegram и Google Sheets) для оперативной обработки заявок.</p>
-              <p>Срок хранения — до 12 месяцев или до отзыва согласия. По вопросам удаления и доступа к данным: info@banemzi.ru.</p>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Согласие (модалка) */}
-      {showConsentDoc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowConsentDoc(false)}>
-          <div className="max-w-3xl w-full mx-4 rounded-2xl bg-[#111] border border-white/10 p-6 text-white" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Согласие на обработку персональных данных</h2>
-              <button onClick={() => setShowConsentDoc(false)} className="text-white/70 hover:text-white">✕</button>
-            </div>
-            <div className="space-y-3 text-white/80 max-h-[60vh] overflow-auto">
-              <p>Я, субъект персональных данных, даю согласие BANEMZI на обработку моих персональных данных (имя, телефон, аккаунт в мессенджере, e‑mail, город, сведения формы) в целях связи по моей заявке и предоставления услуги.</p>
-              <p>Первичное хранение осуществляется на сервере в РФ. Допускается трансграничная передача в сервисы уведомлений и копирования для ускорения обработки заявки.</p>
-              <p>Согласие действует 12 месяцев и может быть отозвано письмом на info@banemzi.ru.</p>
-            </div>
-          </div>
-        </div>
-      )}
+      
+      <LegalModals
+        showPolicy={showPolicy}
+        showConsent={showConsentDoc}
+        showCookies={false}
+        showTerms={false}
+        setShowPolicy={setShowPolicy}
+        setShowConsent={setShowConsentDoc}
+        setShowCookies={() => {}}
+        setShowTerms={() => {}}
+      />
     </div>
   );
 }
