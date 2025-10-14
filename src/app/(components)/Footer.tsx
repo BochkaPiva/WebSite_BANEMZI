@@ -328,10 +328,10 @@ export default function Footer() {
           <p>Используя Сайт, вы соглашаетесь с условиями настоящего Соглашения. Если вы не согласны с какими-либо условиями, пожалуйста, не используйте Сайт.</p>
           
           <h4 className="text-white font-semibold mt-6">2. Информация о компании</h4>
-          <p><strong>BANEMZI</strong><br>
-          Email: info@banemzi.ru<br>
-          Telegram: @banemzi<br>
-          Сайт: banemzi.ru<br>
+          <p><strong>BANEMZI</strong><br />
+          Email: info@banemzi.ru<br />
+          Telegram: @banemzi<br />
+          Сайт: banemzi.ru<br />
           Сфера деятельности: Организация корпоративных мероприятий и тимбилдингов</p>
           
           <h4 className="text-white font-semibold mt-6">3. Описание услуг</h4>
@@ -438,7 +438,7 @@ export default function Footer() {
           
           <h4 className="text-white font-semibold mt-6">12. Контактная информация</h4>
           <p>По всем вопросам, связанным с использованием сайта и настоящим Соглашением, обращайтесь:</p>
-          <p><strong>Email:</strong> info@banemzi.ru<br>
+          <p><strong>Email:</strong> info@banemzi.ru<br />
           <strong>Telegram:</strong> @banemzi</p>
           
           <p className="mt-6"><strong>⚠️ ВАЖНО:</strong> Используя наш сайт, вы подтверждаете, что прочитали, поняли и согласны с условиями настоящего Пользовательского соглашения.</p>
