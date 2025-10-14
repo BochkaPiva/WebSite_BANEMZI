@@ -26,17 +26,24 @@ export default function LegalModals({
   // Block body scroll when any modal is open
   useEffect(() => {
     if (showPolicy || showConsent || showCookies || showTerms) {
-      console.log('Adding modal-open class to body');
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      document.body.style.top = `-${scrollY}px`;
       document.body.classList.add('modal-open');
     } else {
-      console.log('Removing modal-open class from body');
+      // Restore scroll position
+      const scrollY = document.body.style.top;
       document.body.classList.remove('modal-open');
+      document.body.style.top = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
     }
     
     // Cleanup on unmount
     return () => {
-      console.log('Cleanup: removing modal-open class from body');
       document.body.classList.remove('modal-open');
+      document.body.style.top = '';
     };
   }, [showPolicy, showConsent, showCookies, showTerms]);
 
