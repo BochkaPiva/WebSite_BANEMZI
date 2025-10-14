@@ -26,13 +26,16 @@ export default function LegalModals({
   // Block body scroll when any modal is open
   useEffect(() => {
     if (showPolicy || showConsent || showCookies || showTerms) {
+      console.log('Adding modal-open class to body');
       document.body.classList.add('modal-open');
     } else {
+      console.log('Removing modal-open class from body');
       document.body.classList.remove('modal-open');
     }
     
     // Cleanup on unmount
     return () => {
+      console.log('Cleanup: removing modal-open class from body');
       document.body.classList.remove('modal-open');
     };
   }, [showPolicy, showConsent, showCookies, showTerms]);
