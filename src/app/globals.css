@@ -9,6 +9,19 @@ html, body {
   box-sizing: border-box;
 }
 
+/* Hide reCAPTCHA elements */
+.g-recaptcha,
+.grecaptcha-badge,
+iframe[src*="recaptcha"],
+iframe[src*="google.com/recaptcha"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+}
+
 /* Mobile-specific fixes */
 @media (max-width: 768px) {
   html, body {
