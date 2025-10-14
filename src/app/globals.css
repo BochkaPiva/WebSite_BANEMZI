@@ -11,7 +11,39 @@ html, body {
 
 /* Only apply black background if Tailwind classes are not present */
 body:not(.bg-black):not([class*="bg-"]) {
-  background-color: #000000;
+  background-color: #000000 !important;
+}
+
+/* Additional fallback for users with white background */
+html {
+  background-color: #000000 !important;
+}
+
+/* Force black background everywhere - nuclear option */
+body, html, #__next, main, section, div {
+  background-color: #000000 !important;
+}
+
+/* Override any white backgrounds */
+[style*="background-color: white"],
+[style*="background-color: #fff"],
+[style*="background-color: #ffffff"] {
+  background-color: #000000 !important;
+}
+
+/* Force black background on all elements if no Tailwind */
+*:not([class*="bg-"]):not([class*="text-"]) {
+  background-color: inherit;
+}
+
+/* Ensure form buttons keep their styling */
+.motion-button,
+[class*="bg-gradient-to-r"],
+[class*="border-orange"],
+[class*="text-white"] {
+  background: inherit !important;
+  color: inherit !important;
+  border: inherit !important;
 }
 
 * {
@@ -28,7 +60,8 @@ p {
   margin: 0;
 }
 
-button {
+/* Only apply basic button styles if Tailwind classes are not present */
+button:not([class*="bg-"]):not([class*="text-"]):not([class*="border-"]) {
   cursor: pointer;
   border: none;
   background: none;
