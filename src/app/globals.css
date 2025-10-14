@@ -24,3 +24,67 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Принудительная высота для Hero секции */
+section[class*="min-h-screen"] {
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+video[src="/hero.mp4"] {
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+/* Дополнительные правила для принудительной высоты */
+.hero-section {
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+.hero-video {
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+@keyframes shine {
+  0% { filter: hue-rotate(0deg); opacity: 0.95; }
+  50% { filter: hue-rotate(20deg); opacity: 1; }
+  100% { filter: hue-rotate(0deg); opacity: 0.95; }
+}
+
+.btn-shine { animation: shine 3.5s linear infinite; }
+@keyframes fadeIn { to { opacity: 1 } }
+
+@keyframes borderRun {
+  0% { box-shadow: 0 0 0 0 rgba(255,154,60,0.0), 0 0 0 0 rgba(255,209,102,0.0); }
+  50% { box-shadow: 0 0 0 2px rgba(255,154,60,0.8), 0 0 18px 4px rgba(255,209,102,0.35) inset; }
+  100% { box-shadow: 0 0 0 0 rgba(255,154,60,0.0), 0 0 0 0 rgba(255,209,102,0.0); }
+}
+.animate-border { animation: borderRun 2.2s ease-in-out infinite; }
+
+/* Бегущая контурная подсветка (неон по периметру) */
+@keyframes spin360 { to { transform: rotate(360deg); } }
+.run-border {
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  background: conic-gradient(#FFD166, #FF9A3C, #FF6B00, #FFD166);
+  animation: spin360 4s linear infinite;
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 2px), #000 calc(100% - 2px));
+          mask: radial-gradient(farthest-side, #0000 calc(100% - 2px), #000 calc(100% - 2px));
+  filter: blur(0.3px) saturate(1.1);
+  opacity: .9;
+}
+
+/* Анимация стрелок Наверх */
+@keyframes arrowUp {
+  0% { transform: translate(-50%, 6px) scaleX(1); opacity: 0; }
+  30% { opacity: 1; }
+  60% { transform: translate(-50%, -6px) scaleX(1); opacity: 1; }
+  100% { transform: translate(-50%, -12px) scaleX(0.5); opacity: 0; }
+}

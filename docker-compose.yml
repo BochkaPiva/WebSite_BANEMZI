@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    container_name: banemzi-web
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:./banemzi.db
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - GOOGLE_SERVICE_ACCOUNT_JSON=${GOOGLE_SERVICE_ACCOUNT_JSON}
+      - SHEETS_SPREADSHEET_ID=${SHEETS_SPREADSHEET_ID}
+      - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY}
+      - RECAPTCHA_SECRET=${RECAPTCHA_SECRET}
+      - METRIKA_ID=${METRIKA_ID}
+      - APP_URL=${APP_URL}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./banemzi.db:/app/banemzi.db
+
