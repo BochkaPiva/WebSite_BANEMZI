@@ -104,17 +104,21 @@ async function notifyTelegram(data: Record<string, unknown>) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   
+  console.log('Telegram notification attempt:', { botToken: !!botToken, chatId });
+  
   if (!botToken || !chatId) {
     console.error('Telegram credentials not configured');
     return;
   }
 
   const message = `🆕 Заявка
-Тип: ${humanizeEventType(data.eventType)}
+Тип: ${humanizeEventType(data.eventType as string)}
 Город: ${data.city}
-Гостей: ${humanizeGuestsBucket(data.guestsBucket)}
-Контакт: ${humanizeContact(data.contact)}
-Связаться: ${humanizeCallback(data.callback)}`;
+Гостей: ${humanizeGuestsBucket(data.guestsBucket as string)}
+Контакт: ${humanizeContact(data.contact as { kind: string; value: string })}
+Связаться: ${humanizeCallback(data.callback as { type: string; atUtc?: string })}`;
+
+  console.log('Telegram message:', message);
 
   try {
     const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -127,8 +131,13 @@ async function notifyTelegram(data: Record<string, unknown>) {
       })
     });
     
+    const responseText = await response.text();
+    console.log('Telegram response:', response.status, responseText);
+    
     if (!response.ok) {
-      console.error('Telegram notification failed:', await response.text());
+      console.error('Telegram notification failed:', responseText);
+    } else {
+      console.log('Telegram notification sent successfully');
     }
   } catch (error) {
     console.error('Telegram notification error:', error);
@@ -230,21 +239,10 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // Get additional data
-    const userAgent = req.headers.get('user-agent') || '';
-    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '';
-    const ipHash = ip ? Buffer.from(ip).toString('base64').slice(0, 16) : '';
-    
-    const leadData = {
-      ...data,
-      userAgent,
-      ipHash
-    };
-    
     // Send notifications (parallel)
     await Promise.all([
-      notifyTelegram(leadData),
-      copyToGoogleSheet(leadData)
+      notifyTelegram(data),
+      copyToGoogleSheet(data)
     ]);
     
     return NextResponse.json({ success: true });
