@@ -170,6 +170,8 @@ async function copyToGoogleSheet(data: Record<string, unknown>) {
       ]
     ];
     
+    console.log('Google Sheets values:', JSON.stringify(values, null, 2));
+    
     await sheets.spreadsheets.values.append({
       spreadsheetId,
       range: 'Заявки!A:J',
@@ -202,6 +204,7 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    console.log('Received data:', JSON.stringify(body, null, 2));
     
     // Validate city
     if (!RU_CITIES.includes(body.city)) {

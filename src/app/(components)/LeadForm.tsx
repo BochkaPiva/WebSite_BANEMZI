@@ -70,7 +70,7 @@ export default function LeadForm() {
       });
       let json: any = {};
       try { json = await res.json(); } catch {}
-      if (!res.ok || !json.ok) {
+      if (!res.ok || !json.success) {
         setMessage('Проверьте контакт и город. Если не поможет — попробуйте ещё раз.');
         return;
       }

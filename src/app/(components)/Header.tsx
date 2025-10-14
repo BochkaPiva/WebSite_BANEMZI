@@ -15,8 +15,7 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleCta = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
+  const handleCta = () => {
     const target = document.getElementById('lead');
     if (!target) return;
     const y = target.getBoundingClientRect().top + window.scrollY - 80;
@@ -60,7 +59,7 @@ export default function Header() {
         </nav>
         {/* CTA справа с магнитным эффектом */}
         <MagneticButton
-          onClick={() => handleCta({} as React.MouseEvent<HTMLAnchorElement>)}
+          onClick={handleCta}
           className="relative px-4 py-2 rounded-full text-white font-semibold overflow-hidden backdrop-blur-md bg-white/10 hover:bg-white/15 transition"
           strength={0.6}
           attractionRadius={120}
