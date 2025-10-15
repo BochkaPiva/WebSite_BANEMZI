@@ -114,10 +114,15 @@ async function notifyTelegram(data: Record<string, unknown>) {
     const topicId = process.env.TELEGRAM_TOPIC_ID; // ID топика для заявок
     
     console.log('=== TELEGRAM NOTIFICATION START ===');
-    console.log('Telegram notification attempt:', { 
-      botToken: !!botToken, 
-      chatId, 
-      topicId,
+    console.log('Environment check:', {
+      NODE_ENV: process.env.NODE_ENV,
+      VERCEL: process.env.VERCEL,
+      botTokenExists: !!botToken,
+      botTokenLength: botToken ? botToken.length : 0,
+      chatIdExists: !!chatId,
+      chatIdValue: chatId,
+      topicIdExists: !!topicId,
+      topicIdValue: topicId,
       topicIdType: typeof topicId,
       topicIdParsed: topicId ? parseInt(topicId) : null
     });
@@ -150,7 +155,22 @@ async function notifyTelegram(data: Record<string, unknown>) {
       console.log('No topic ID provided, sending to general chat');
     }
 
-    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+    console.log('Telegram API URL:', telegramUrl.replace(botToken, 'BOT_TOKEN_HIDDEN'));
+    console.log('Request body:', JSON.stringify(requestBody, null, 2));
+    
+    // Test Telegram API connectivity first
+    try {
+      const testResponse = await fetch(`https://api.telegram.org/bot${botToken}/getMe`, {
+        method: 'GET'
+      });
+      const testResult = await testResponse.text();
+      console.log('Telegram bot test:', testResponse.status, testResult);
+    } catch (testError) {
+      console.error('Telegram bot test failed:', testError);
+    }
+    
+    const response = await fetch(telegramUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody)
