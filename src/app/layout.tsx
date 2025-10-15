@@ -81,6 +81,7 @@ export default function RootLayout({
         <link rel="icon" href="/Logo.png" type="image/png" sizes="32x32" />
         <link rel="shortcut icon" href="/Logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/Logo.png" />
+        <meta name="yandex-verification" content="a59490e9b6aa01b0" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}>
         {/* Structured Data for SEO */}
