@@ -29,6 +29,11 @@ iframe[src*="google.com/recaptcha"] {
   top: -9999px !important;
 }
 
+/* Optimize font loading */
+@font-face {
+  font-display: swap;
+}
+
 /* Mobile-specific fixes */
 @media (max-width: 768px) {
   html, body {

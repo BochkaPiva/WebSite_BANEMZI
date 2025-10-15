@@ -60,7 +60,7 @@ export default function CitiesMap() {
               alt="Карта России"
               fill
               className="object-contain"
-              priority
+              loading="lazy"
             />
             
             {/* Города */}

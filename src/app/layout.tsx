@@ -82,6 +82,14 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/Logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/Logo.png" />
         <meta name="yandex-verification" content="a59490e9b6aa01b0" />
+        
+        {/* Preload critical resources */}
+        <link rel="preload" href="/Logo.png" as="image" type="image/png" />
+        <link rel="preload" href="/hero.mp4" as="video" type="video/mp4" />
+        
+        {/* Preconnect to external domains */}
+        <link rel="preconnect" href="https://www.google.com" />
+        <link rel="preconnect" href="https://www.gstatic.com" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}>
         {/* Structured Data for SEO */}
@@ -166,7 +174,7 @@ export default function RootLayout({
         />
         {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ? (
           <Script
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
           />
         ) : null}

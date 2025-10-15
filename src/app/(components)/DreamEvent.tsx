@@ -277,6 +277,8 @@ export default function DreamEvent() {
                       width={600}
                       height={320}
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
                   <div className="absolute -top-6 -right-6 w-12 h-12 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow-lg animate-pulse"></div>
@@ -296,6 +298,8 @@ export default function DreamEvent() {
                       width={300}
                       height={256}
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     />
                   </div>
                   <div className="absolute -top-4 -left-4 w-6 h-6 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow-lg"></div>
@@ -314,6 +318,8 @@ export default function DreamEvent() {
                       width={400}
                       height={288}
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     />
                   </div>
                   <div className="absolute -bottom-6 -right-6 w-10 h-10 bg-gradient-to-r from-orange-300 to-orange-500 rounded-full shadow-lg"></div>
