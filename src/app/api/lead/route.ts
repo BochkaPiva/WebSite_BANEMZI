@@ -108,34 +108,34 @@ function humanizeCallback(callback: { type: string; atUtc?: string }): string {
 }
 
 async function notifyTelegram(data: Record<string, unknown>) {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-  const topicId = process.env.TELEGRAM_TOPIC_ID; // ID топика для заявок
-  
-  console.log('=== TELEGRAM NOTIFICATION START ===');
-  console.log('Telegram notification attempt:', { 
-    botToken: !!botToken, 
-    chatId, 
-    topicId,
-    topicIdType: typeof topicId,
-    topicIdParsed: topicId ? parseInt(topicId) : null
-  });
-  
-  if (!botToken || !chatId) {
-    console.error('Telegram credentials not configured');
-    return;
-  }
+  try {
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+    const topicId = process.env.TELEGRAM_TOPIC_ID; // ID топика для заявок
+    
+    console.log('=== TELEGRAM NOTIFICATION START ===');
+    console.log('Telegram notification attempt:', { 
+      botToken: !!botToken, 
+      chatId, 
+      topicId,
+      topicIdType: typeof topicId,
+      topicIdParsed: topicId ? parseInt(topicId) : null
+    });
+    
+    if (!botToken || !chatId) {
+      console.error('Telegram credentials not configured');
+      return;
+    }
 
-  const message = `🆕 Заявка
+    const message = `🆕 Заявка
 Тип: ${humanizeEventType(data.eventType as string)}
 Город: ${data.city}
 Гостей: ${humanizeGuestsBucket(data.guestsBucket as string)}
 Контакт: ${humanizeContact(data.contact as { kind: string; value: string })}
 Связаться: ${humanizeCallback(data.callback as { type: string; atUtc?: string })}`;
 
-  console.log('Telegram message:', message);
+    console.log('Telegram message:', message);
 
-  try {
     const requestBody: any = {
       chat_id: chatId,
       text: message,
@@ -164,22 +164,23 @@ async function notifyTelegram(data: Record<string, unknown>) {
     } else {
       console.log('Telegram notification sent successfully');
     }
+    
+    console.log('=== TELEGRAM NOTIFICATION END ===');
   } catch (error) {
     console.error('Telegram notification error:', error);
+    throw error; // Re-throw to be caught by Promise.allSettled
   }
-  console.log('=== TELEGRAM NOTIFICATION END ===');
 }
 
 async function copyToGoogleSheet(data: Record<string, unknown>) {
-  const spreadsheetId = process.env.SHEETS_SPREADSHEET_ID;
-  const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-  
-  if (!spreadsheetId || !serviceAccountJson) {
-    console.error('Google Sheets credentials not configured');
-    return;
-  }
-
   try {
+    const spreadsheetId = process.env.SHEETS_SPREADSHEET_ID;
+    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+    
+    if (!spreadsheetId || !serviceAccountJson) {
+      console.error('Google Sheets credentials not configured');
+      return;
+    }
     const { google } = await import('googleapis');
     const serviceAccount = JSON.parse(serviceAccountJson);
     
@@ -222,6 +223,7 @@ async function copyToGoogleSheet(data: Record<string, unknown>) {
     });
   } catch (error) {
     console.error('Google Sheets error:', error);
+    throw error; // Re-throw to be caught by Promise.allSettled
   }
 }
 
@@ -281,11 +283,21 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // Send notifications (parallel)
-    await Promise.all([
+    // Send notifications (parallel with individual error handling)
+    const results = await Promise.allSettled([
       notifyTelegram(data),
       copyToGoogleSheet(data)
     ]);
+    
+    // Log results
+    results.forEach((result, index) => {
+      const service = index === 0 ? 'Telegram' : 'Google Sheets';
+      if (result.status === 'fulfilled') {
+        console.log(`${service} notification: SUCCESS`);
+      } else {
+        console.error(`${service} notification: FAILED`, result.reason);
+      }
+    });
     
     return NextResponse.json({ success: true });
     
