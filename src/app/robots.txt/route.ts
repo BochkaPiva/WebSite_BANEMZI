@@ -1,5 +1,5 @@
 export async function GET() {
-  const base = process.env.APP_URL || 'https://banemzi.ru';
+  const base = 'https://banemzi.ru';
   const body = `User-agent: *
 Allow: /
 
