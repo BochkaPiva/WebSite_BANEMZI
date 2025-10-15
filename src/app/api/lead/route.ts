@@ -73,7 +73,7 @@ function humanizeEventType(type: string): string {
 
 function humanizeGuestsBucket(bucket: string): string {
   const map: Record<string, string> = {
-    'lt20': '<20',
+    'lt20': 'до 20',
     '20_50': '20-50',
     '50_200': '50-200',
     '200_500': '200-500',
@@ -143,8 +143,8 @@ async function notifyTelegram(data: Record<string, unknown>) {
 
     const requestBody: any = {
       chat_id: chatId,
-      text: message,
-      parse_mode: 'HTML'
+      text: message
+      // Убираем parse_mode: 'HTML' чтобы избежать ошибок парсинга
     };
 
     // Если указан ID топика, отправляем в топик
