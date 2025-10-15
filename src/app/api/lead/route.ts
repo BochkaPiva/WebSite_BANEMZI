@@ -204,9 +204,19 @@ async function copyToGoogleSheet(data: Record<string, unknown>) {
     
     console.log('Google Sheets values:', JSON.stringify(values, null, 2));
     
-    await sheets.spreadsheets.values.append({
+    // Сначала получаем все данные, чтобы найти первую пустую строку
+    const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'Заявки!A:G',
+      range: 'Заявки!A:G'
+    });
+    
+    const existingData = response.data.values || [];
+    const nextRow = existingData.length + 1;
+    
+    // Добавляем данные в конкретную строку
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `Заявки!A${nextRow}:G${nextRow}`,
       valueInputOption: 'RAW',
       requestBody: { values }
     });
