@@ -1,5 +1,28 @@
 export async function GET() {
-  const body = `User-agent: *\nAllow: /\nSitemap: ${process.env.APP_URL || 'http://localhost:3000'}/sitemap.xml`;
-  return new Response(body, { headers: { 'Content-Type': 'text/plain' } });
+  const base = process.env.APP_URL || 'http://localhost:3000';
+  const body = `User-agent: *
+Allow: /
+
+# Disallow admin and API routes
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow important pages
+Allow: /policy
+Allow: /consent
+
+# Sitemap location
+Sitemap: ${base}/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1`;
+  
+  return new Response(body, { 
+    headers: { 
+      'Content-Type': 'text/plain',
+      'Cache-Control': 'public, max-age=86400'
+    } 
+  });
 }
 
