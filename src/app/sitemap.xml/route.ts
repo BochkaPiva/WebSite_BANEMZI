@@ -1,5 +1,5 @@
 export async function GET() {
-  const base = process.env.APP_URL || 'http://localhost:3000';
+  const base = process.env.APP_URL || 'https://banemzi.ru';
   const now = new Date().toISOString();
   
   const urls = [

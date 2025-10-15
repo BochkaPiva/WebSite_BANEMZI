@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     title: 'BANEMZI — ивент‑агентство в Омске',
     description: 'Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации. Создаем мероприятия, которые запоминаются.',
     type: 'website',
-    url: process.env.APP_URL || 'http://localhost:3000',
+    url: process.env.APP_URL || 'https://banemzi.ru',
     siteName: 'BANEMZI',
     locale: 'ru_RU',
     images: [
@@ -56,9 +56,9 @@ export const metadata: Metadata = {
     images: ['/Logo.png'],
   },
   alternates: {
-    canonical: process.env.APP_URL || 'http://localhost:3000',
+    canonical: process.env.APP_URL || 'https://banemzi.ru',
   },
-  metadataBase: new URL(process.env.APP_URL || 'http://localhost:3000'),
+  metadataBase: new URL(process.env.APP_URL || 'https://banemzi.ru'),
   icons: {
     icon: [
       { url: '/favicon.ico', type: 'image/x-icon' },
@@ -92,8 +92,8 @@ export default function RootLayout({
               "@type": "Organization",
               "name": "BANEMZI",
               "description": "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции.",
-              "url": process.env.APP_URL || "http://localhost:3000",
-              "logo": `${process.env.APP_URL || "http://localhost:3000"}/Logo.png`,
+              "url": process.env.APP_URL || "https://banemzi.ru",
+              "logo": `${process.env.APP_URL || "https://banemzi.ru"}/Logo.png`,
               "address": {
                 "@type": "PostalAddress",
                 "addressLocality": "Омск",
