@@ -65,6 +65,7 @@ export default function DreamEvent() {
       <div 
         ref={containerRef}
         className="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-[600px] md:min-h-[900px] pb-16"
+        suppressHydrationWarning
       >
         {/* Интерактивный овальный фон */}
         <motion.div

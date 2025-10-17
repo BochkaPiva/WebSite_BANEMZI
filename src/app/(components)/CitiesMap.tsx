@@ -43,14 +43,19 @@ export default function CitiesMap() {
 
   return (
     <Reveal className="relative w-full">
-      {/* Заголовок */}
-      <h3 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white tracking-tight">
-        ГОРОДА КЛИЕНТОВ{' '}
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00]">
-          BANEMZI
-        </span>
-      </h3>
-
+      {/* Заголовок секции */}
+      <div className="text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          Города наших{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00]">
+            клиентов
+          </span>
+        </h2>
+        <p className="text-white/60 text-lg max-w-2xl mx-auto">
+          Мы работаем по всей России и создаем незабываемые события в разных городах
+        </p>
+      </div>
+      
       {/* Десктопная версия - карта */}
       <div className="hidden md:block">
         <div className="relative w-full h-[800px] flex items-center justify-center">

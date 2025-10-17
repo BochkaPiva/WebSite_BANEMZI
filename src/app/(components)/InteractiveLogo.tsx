@@ -138,6 +138,7 @@ export default function InteractiveLogo({
         alt={alt}
         className={`cursor-pointer ${className}`}
         onClick={onClick}
+        suppressHydrationWarning
         style={{
           filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
         }}
@@ -150,6 +151,7 @@ export default function InteractiveLogo({
       ref={logoRef}
       className={`relative ${className}`}
       onClick={onClick}
+      suppressHydrationWarning
       animate={{
         x: position.x,
         y: position.y,

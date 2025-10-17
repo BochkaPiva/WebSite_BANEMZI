@@ -3,6 +3,7 @@ import Header from './(components)/Header';
 import { Services, Benefits, Process, FAQ, FinalCTA, Cities, DreamEventSection } from './(components)/Sections';
 import Hero from './(components)/Hero';
 import Footer from './(components)/Footer';
+import ReviewsCarousel from './(components)/ReviewsCarousel';
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       <Header />
       <Hero />
       <DreamEventSection />
+      <ReviewsCarousel />
       <Benefits />
       <Process />
       <Cities />

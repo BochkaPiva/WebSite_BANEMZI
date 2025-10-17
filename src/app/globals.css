@@ -29,9 +29,38 @@ iframe[src*="google.com/recaptcha"] {
   top: -9999px !important;
 }
 
+/* Review card border fix */
+.review-card-border {
+  position: relative;
+}
+
+.review-card-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 1rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.review-card-border:hover::before {
+  background: linear-gradient(135deg, rgba(255, 154, 60, 0.3) 0%, rgba(255, 154, 60, 0.3) 100%);
+}
+
 /* Optimize font loading */
 @font-face {
+  font-family: 'system';
   font-display: swap;
+  src: local('system-ui');
 }
 
 /* Mobile-specific fixes */
@@ -191,13 +220,7 @@ video[src="/hero.mp4"] {
   opacity: .9;
 }
 
-/* Анимация стрелок Наверх */
-@keyframes arrowUp {
-  0% { transform: translate(-50%, 6px) scaleX(1); opacity: 0; }
-  30% { opacity: 1; }
-  60% { transform: translate(-50%, -6px) scaleX(1); opacity: 1; }
-  100% { transform: translate(-50%, -12px) scaleX(0.5); opacity: 0; }
-}
+/* Анимация стрелок Наверх - удалена, заменена на новую кнопку */
 
 /* Скрытие контролов видео */
 .hero-video {

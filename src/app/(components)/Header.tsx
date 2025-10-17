@@ -26,7 +26,7 @@ export default function Header() {
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
-  const handleTop = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleTop = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const lenis = (window as any).lenis;
     if (lenis && typeof lenis.scrollTo === 'function') {
@@ -38,22 +38,44 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 text-white">
       <div className="relative max-w-7xl mx-auto px-3 sm:px-4 md:px-6 h-16 flex items-center justify-between">
-        {/* Лого слева */}
-        <a href="#top" className={`flex flex-col items-center justify-center gap-0 max-w-[40%] transition-opacity duration-300 ${showTop ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={handleTop}>
-          <span className="text-white/70 text-xs tracking-[0.3em] uppercase leading-none">Наверх</span>
-          <span className="relative mt-1 h-3 w-8 overflow-hidden flex justify-center">
-            <span className="absolute top-1/2 -translate-y-1/2 translate-x-0.5 h-[2px] w-8 bg-white/70 origin-center animate-[arrowUp_1.6s_ease-in-out_infinite]" />
-            <span className="absolute top-1/2 -translate-y-[8px] translate-x-0.5 h-[2px] w-6 bg-white/50 origin-center animate-[arrowUp_1.6s_ease-in-out_infinite_0.18s]" />
+        {/* Кнопка "Наверх" слева */}
+        <button 
+          className={`group relative flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-orange-500/30 transition-all duration-300 ${showTop ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+          onClick={handleTop}
+        >
+          {/* Анимированная иконка стрелки вверх */}
+          <div className="relative w-6 h-6 flex items-center justify-center">
+            <svg 
+              className="w-4 h-4 text-white/70 group-hover:text-orange-400 transition-colors duration-300 animate-bounce" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M5 10l7-7m0 0l7 7m-7-7v18" 
+              />
+            </svg>
+          </div>
+          
+          {/* Текст */}
+          <span className="text-white/70 text-sm font-medium group-hover:text-white transition-colors duration-300">
+            Наверх
           </span>
-        </a>
+          
+          {/* Эффект свечения при hover */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-400/0 via-orange-400/5 to-orange-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </button>
         {/* Центрированное меню с волновой анимацией */}
         <nav className="hidden sm:flex items-center justify-center absolute left-1/2 -translate-x-1/2 z-20 px-2">
           <WaveMenu 
             items={[
               { label: "Что умеем", href: "#dream-event" },
+              { label: "Отзывы", href: "#reviews" },
               { label: "Что получите", href: "#benefits" },
               { label: "Процесс", href: "#process" },
-              { label: "Города", href: "#cities" },
               { label: "FAQ", href: "#faq" }
             ]}
           />

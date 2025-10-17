@@ -19,7 +19,7 @@ export default function Hero() {
             loop
             playsInline
             controls={false}
-            poster="/hero-poster.jpg"
+            suppressHydrationWarning
             style={{ 
               height: '100vh !important', 
               minHeight: '100vh !important', 
@@ -55,9 +55,6 @@ export default function Hero() {
               className="w-[28rem] sm:w-[36rem] md:w-[42rem]"
               repulsionRadius={250}
               repulsionStrength={1.2}
-              priority={true}
-              fetchPriority="high"
-              sizes="(max-width: 640px) 28rem, (max-width: 768px) 36rem, 42rem"
               onClick={() => {
                 const target = document.getElementById('lead');
                 if (!target) return;
