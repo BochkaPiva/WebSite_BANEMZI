@@ -147,27 +147,32 @@ export default function LeadForm() {
         
         {/* Основной контейнер формы */}
         <motion.div 
-          className="relative p-8 md:p-12 rounded-3xl bg-gradient-to-br from-gray-800/40 via-gray-700/20 to-gray-800/40 border-2 border-orange-400/20 backdrop-blur-sm shadow-2xl text-white"
+          className="relative p-6 sm:p-8 md:p-12 rounded-3xl bg-gradient-to-br from-gray-800/40 via-gray-700/20 to-gray-800/40 border-2 border-orange-400/20 backdrop-blur-sm shadow-2xl text-white"
+          style={{ 
+            minHeight: 'auto',
+            maxHeight: 'calc(100vh - 2rem)',
+            overflowY: 'auto'
+          }}
           initial={{ opacity: 0, y: 30, rotate: -1 }}
           animate={{ opacity: 1, y: 0, rotate: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           {/* Заголовок формы */}
           <motion.div 
-            className="text-center mb-8"
+            className="text-center mb-6 sm:mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-orange-500 mb-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-orange-500 mb-2">
               Оставить заявку
             </h2>
-            <p className="text-gray-300 text-lg">Расскажите о вашем мероприятии</p>
+            <p className="text-gray-300 text-base sm:text-lg">Расскажите о вашем мероприятии</p>
           </motion.div>
 
           {step === 1 ? (
             <motion.div 
-              className="space-y-8"
+              className="space-y-6 sm:space-y-8"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -218,11 +223,11 @@ export default function LeadForm() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
                     >
-                      <div className="flex items-start space-x-4">
-                        <div className="text-3xl group-hover:scale-110 transition-transform duration-200 flex-shrink-0">{opt.icon}</div>
+                      <div className="flex items-start space-x-3 sm:space-x-4">
+                        <div className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-200 flex-shrink-0">{opt.icon}</div>
                         <div className="flex-1">
-                          <div className="font-semibold text-white text-lg mb-1">{opt.t}</div>
-                          <div className="text-gray-300 text-sm leading-relaxed">{opt.desc}</div>
+                          <div className="font-semibold text-white text-base sm:text-lg mb-1">{opt.t}</div>
+                          <div className="text-gray-300 text-xs sm:text-sm leading-relaxed">{opt.desc}</div>
                         </div>
                       </div>
                       {step1.eventType === opt.k && (

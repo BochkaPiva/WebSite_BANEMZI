@@ -71,21 +71,26 @@ export default function Hero() {
             />
           </motion.div>
         </ParallaxElement>
-      <ParallaxElement speed={0.2} direction="up">
-        <Reveal>
-          <h1 className="relative text-4xl md:text-6xl font-semibold leading-tight -mt-16">
-            События, про которые{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00]">хочется рассказывать.</span>
-          </h1>
-        </Reveal>
-      </ParallaxElement>
-      <ParallaxElement speed={0.1} direction="up">
-        <Reveal delay={0.1}>
-          <p className="relative mt-5 text-lg text-white/80">
-            От идеи до шоу — под ключ и без компромиссов.
-          </p>
-        </Reveal>
-      </ParallaxElement>
+      </div>
+      
+      {/* Заголовок на всю ширину экрана */}
+      <div className="w-full px-4 sm:px-6">
+        <ParallaxElement speed={0.2} direction="up">
+          <Reveal>
+            <h1 className="relative text-4xl md:text-6xl lg:text-7xl font-semibold leading-tight text-center">
+              События, про которые{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00]">хочется рассказывать.</span>
+            </h1>
+          </Reveal>
+        </ParallaxElement>
+        <ParallaxElement speed={0.1} direction="up">
+          <Reveal delay={0.1}>
+            <p className="relative mt-5 text-lg md:text-xl text-white/80 text-center max-w-4xl mx-auto">
+              От идеи до шоу — под ключ и без компромиссов.
+            </p>
+          </Reveal>
+        </ParallaxElement>
+      </div>
       
       {/* SEO content - hidden but accessible to search engines */}
       <div className="sr-only">
@@ -100,7 +105,6 @@ export default function Hero() {
           <li>Деловые события и конференции</li>
         </ul>
         <p>Организация мероприятий в Омске с полным циклом услуг: от концепции до реализации. Event агентство BANEMZI - ваш надежный партнер в создании ярких и запоминающихся событий.</p>
-      </div>
       </div>
     </section>
   );
