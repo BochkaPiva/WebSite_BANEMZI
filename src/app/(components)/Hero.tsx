@@ -74,16 +74,15 @@ export default function Hero() {
       <ParallaxElement speed={0.2} direction="up">
         <Reveal>
           <h1 className="relative text-4xl md:text-6xl font-semibold leading-tight -mt-16">
-            Будет громко, красиво и{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00]">чуть‑чуть неприлично. </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00]">Как вы просили.</span>
+            События, про которые{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FF9A3C] to-[#FF6B00]">хочется рассказывать.</span>
           </h1>
         </Reveal>
       </ParallaxElement>
       <ParallaxElement speed={0.1} direction="up">
         <Reveal delay={0.1}>
           <p className="relative mt-5 text-lg text-white/80">
-            Мы не проводим мероприятия. Мы делаем повод хвастаться.
+            От идеи до шоу — под ключ и без компромиссов.
           </p>
         </Reveal>
       </ParallaxElement>
