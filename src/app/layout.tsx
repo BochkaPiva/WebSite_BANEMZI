@@ -28,158 +28,141 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   openGraph: {
-    title: 'BANEMZI — ивент‑агентство в Омске',
-    description: 'Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации. Создаем мероприятия, которые запоминаются.',
-    type: 'website',
-    url: 'https://banemzi.ru',
-    siteName: 'BANEMZI',
-    locale: 'ru_RU',
+    type: "website",
+    locale: "ru_RU",
+    url: "https://banemzi.ru",
+    title: "BANEMZI - Ивент агентство в Омске | Организация мероприятий",
+    description: "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции. Создаем мероприятия, которые запоминаются навсегда.",
+    siteName: "BANEMZI",
     images: [
       {
-        url: '/Logo.png',
+        url: "/Logo.png",
         width: 1200,
         height: 630,
-        alt: 'BANEMZI - Ивент агентство в Омске',
+        alt: "BANEMZI - Ивент агентство в Омске",
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'BANEMZI — ивент‑агентство в Омске',
-    description: 'Профессиональная организация мероприятий в Омске. Создаем мероприятия, которые запоминаются.',
-    images: ['/Logo.png'],
+    card: "summary_large_image",
+    title: "BANEMZI - Ивент агентство в Омске | Организация мероприятий",
+    description: "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции. Создаем мероприятия, которые запоминаются навсегда.",
+    images: ["/Logo.png"],
+  },
+  verification: {
+    google: "google188ec728e8b1fa5d",
+    yandex: "a59490e9b6aa01b0",
   },
   alternates: {
-    canonical: 'https://banemzi.ru',
-  },
-  metadataBase: new URL('https://banemzi.ru'),
-  icons: {
-    icon: [
-      { url: '/favicon.ico', type: 'image/x-icon' },
-      { url: '/Logo.png', type: 'image/png' },
-    ],
-    shortcut: [{ url: '/Logo.png', type: 'image/png' }],
-    apple: [{ url: '/Logo.png', type: 'image/png' }],
+    canonical: "https://banemzi.ru",
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang="ru">
       <head>
-        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <link rel="icon" href="/Logo.png" type="image/png" sizes="32x32" />
-        <link rel="shortcut icon" href="/Logo.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/Logo.png" />
-        <meta name="yandex-verification" content="a59490e9b6aa01b0" />
-        
-        {/* Preload critical resources */}
-        <link rel="preload" href="/Logo.png" as="image" type="image/png" />
-        <link rel="preload" href="/hero.mp4" as="video" type="video/mp4" />
-        
-        {/* Preconnect to external domains */}
-        <link rel="preconnect" href="https://www.google.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.gstatic.com" />
+        <link rel="preconnect" href="https://www.google.com" />
+        <link rel="preconnect" href="https://api.telegram.org" />
+        <link rel="preconnect" href="https://sheets.googleapis.com" />
+        <link rel="preconnect" href="https://www.googleapis.com" />
+        <link rel="preload" href="/Logo.png" as="image" type="image/png" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}>
-        {/* Structured Data for SEO */}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <SmoothScroll />
+        {children}
+        
+        {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "BANEMZI",
-              "description": "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции.",
-              "url": "https://banemzi.ru",
-              "logo": "https://banemzi.ru/Logo.png",
-              "address": {
+              name: "BANEMZI",
+              description: "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции.",
+              url: "https://banemzi.ru",
+              logo: "https://banemzi.ru/Logo.png",
+              address: {
                 "@type": "PostalAddress",
-                "addressLocality": "Омск",
-                "addressCountry": "RU"
+                addressLocality: "Омск",
+                addressCountry: "RU",
               },
-              "contactPoint": {
+              contactPoint: {
                 "@type": "ContactPoint",
-                "contactType": "customer service",
-                "availableLanguage": "Russian"
+                telephone: "+7-XXX-XXX-XX-XX",
+                contactType: "customer service",
+                areaServed: "RU",
+                availableLanguage: "Russian",
               },
-              "sameAs": [],
-              "serviceArea": {
+              sameAs: [
+                "https://banemzi.ru",
+              ],
+              serviceArea: {
                 "@type": "GeoCircle",
-                "geoMidpoint": {
+                geoMidpoint: {
                   "@type": "GeoCoordinates",
-                  "latitude": 54.9885,
-                  "longitude": 73.3242
+                  latitude: 54.9885,
+                  longitude: 73.3242,
                 },
-                "geoRadius": "500000"
+                geoRadius: "1000000",
               },
-              "hasOfferCatalog": {
+              hasOfferCatalog: {
                 "@type": "OfferCatalog",
-                "name": "Услуги по организации мероприятий",
-                "itemListElement": [
+                name: "Услуги ивент агентства",
+                itemListElement: [
                   {
                     "@type": "Offer",
-                    "itemOffered": {
+                    itemOffered: {
                       "@type": "Service",
-                      "name": "Корпоративные праздники",
-                      "description": "Дни рождения компаний, юбилеи, корпоративы"
-                    }
+                      name: "Корпоративные мероприятия",
+                      description: "Организация корпоративных праздников и мероприятий",
+                    },
                   },
                   {
                     "@type": "Offer",
-                    "itemOffered": {
+                    itemOffered: {
                       "@type": "Service",
-                      "name": "Тимбилдинги и квесты",
-                      "description": "Сплочение команды через интерактивные активности"
-                    }
+                      name: "Тимбилдинги",
+                      description: "Проведение тимбилдингов и командных мероприятий",
+                    },
                   },
                   {
                     "@type": "Offer",
-                    "itemOffered": {
+                    itemOffered: {
                       "@type": "Service",
-                      "name": "Презентации и запуски",
-                      "description": "Презентации товаров, услуг, новых локаций"
-                    }
+                      name: "Презентации",
+                      description: "Организация презентаций товаров и услуг",
+                    },
                   },
                   {
                     "@type": "Offer",
-                    "itemOffered": {
+                    itemOffered: {
                       "@type": "Service",
-                      "name": "Промо-мероприятия",
-                      "description": "Знакомство с брендом, рекламные акции"
-                    }
+                      name: "Промо-акции",
+                      description: "Проведение промо-мероприятий и рекламных акций",
+                    },
                   },
-                  {
-                    "@type": "Offer",
-                    "itemOffered": {
-                      "@type": "Service",
-                      "name": "Деловые события",
-                      "description": "Конференции, семинары, бизнес-встречи"
-                    }
-                  }
-                ]
-              }
-            })
+                ],
+              },
+            }),
           }}
         />
-        {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ? (
-          <Script
-            strategy="lazyOnload"
-            src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
-          />
-        ) : null}
-        <SmoothScroll />
-        {children}
       </body>
     </html>
   );

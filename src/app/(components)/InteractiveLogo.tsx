@@ -7,18 +7,24 @@ interface InteractiveLogoProps {
   src: string;
   alt: string;
   className?: string;
+  style?: React.CSSProperties;
   repulsionRadius?: number;
   repulsionStrength?: number;
   onClick?: () => void;
+  priority?: boolean;
+  fetchPriority?: 'high' | 'low' | 'auto';
 }
 
 export default function InteractiveLogo({ 
   src, 
   alt, 
   className = '',
+  style,
   repulsionRadius = 250,
   repulsionStrength = 1.2,
-  onClick
+  onClick,
+  priority = false,
+  fetchPriority = 'auto'
 }: InteractiveLogoProps) {
   const logoRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -139,8 +145,11 @@ export default function InteractiveLogo({
         className={`cursor-pointer ${className}`}
         onClick={onClick}
         suppressHydrationWarning
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={fetchPriority}
         style={{
           filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
+          ...style,
         }}
       />
     );
@@ -184,7 +193,10 @@ export default function InteractiveLogo({
         style={{
           filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
           transformStyle: 'preserve-3d',
+          ...style,
         }}
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={fetchPriority}
       />
     </motion.div>
   );

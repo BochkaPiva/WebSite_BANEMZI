@@ -41,7 +41,7 @@ export default function Hero() {
       </ParallaxElement>
       {/* Затемнение для читаемости */}
       <div className="absolute inset-0 -z-10 bg-black/45" />
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-6" style={{ minHeight: '400px' }}>
         {/* Интерактивный логотип с параллаксом и скролл-анимацией */}
         <ParallaxElement speed={0.3} direction="up" className="flex justify-center mb-6 sm:mb-8 -mt-10">
           <motion.div
@@ -53,6 +53,8 @@ export default function Hero() {
               src="/Logo.png"
               alt="BANEMZI"
               className="w-[28rem] sm:w-[36rem] md:w-[42rem]"
+              priority={true}
+              fetchPriority="high"
               repulsionRadius={250}
               repulsionStrength={1.2}
               onClick={() => {
