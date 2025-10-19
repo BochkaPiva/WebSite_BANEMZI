@@ -22,6 +22,17 @@ export const metadata: Metadata = {
   authors: [{ name: "BANEMZI" }],
   creator: "BANEMZI",
   publisher: "BANEMZI",
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/Logo.png', type: 'image/png', sizes: '32x32' },
+      { url: '/Logo.png', type: 'image/png', sizes: '16x16' }
+    ],
+    apple: [
+      { url: '/Logo.png', sizes: '180x180', type: 'image/png' }
+    ],
+    shortcut: '/favicon.ico'
+  },
   robots: {
     index: true,
     follow: true,
@@ -72,6 +83,11 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/Logo.png" type="image/png" sizes="32x32" />
+        <link rel="icon" href="/Logo.png" type="image/png" sizes="16x16" />
+        <link rel="apple-touch-icon" href="/Logo.png" sizes="180x180" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
