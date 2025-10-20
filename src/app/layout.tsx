@@ -98,9 +98,14 @@ export default function RootLayout({
             <link rel="icon" href="/favicon.ico" sizes="32x32" />
             <link rel="icon" href="/Logo.png" type="image/png" sizes="192x192" />
             <link rel="icon" href="/Logo.png" type="image/png" sizes="512x512" />
+            <link rel="icon" href="/Logo.png" type="image/png" sizes="48x48" />
+            <link rel="icon" href="/Logo.png" type="image/png" sizes="64x64" />
             <link rel="apple-touch-icon" href="/Logo.png" sizes="180x180" />
             <link rel="shortcut icon" href="/favicon.ico" />
             <link rel="manifest" href="/manifest.json" />
+            <meta name="msapplication-TileImage" content="/Logo.png" />
+            <meta name="msapplication-TileColor" content="#FF6B00" />
+            <meta name="theme-color" content="#FF6B00" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
