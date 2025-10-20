@@ -39,6 +39,7 @@ export default function InteractiveLogo({
     rotateY: 0
   });
   const [isInteracting, setIsInteracting] = useState(false);
+  const lastUpdateRef = useRef(0);
 
   useEffect(() => {
     setIsMounted(true);
@@ -53,6 +54,11 @@ export default function InteractiveLogo({
     if (!logo) return;
 
     const handleMouseMove = (e: MouseEvent) => {
+      // Throttling для производительности
+      const now = Date.now();
+      if (now - lastUpdateRef.current < 16) return; // ~60fps
+      lastUpdateRef.current = now;
+
       const rect = logo.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
@@ -80,17 +86,17 @@ export default function InteractiveLogo({
         const rawDeltaY = e.clientY - centerY;
         const maxDelta = Math.max(Math.abs(rawDeltaX), Math.abs(rawDeltaY));
         
-        // Деформация в направлении от курсора
-        const stretchX = 1 + (Math.abs(rawDeltaX) / maxDelta) * intensity * 0.2;
-        const stretchY = 1 + (Math.abs(rawDeltaY) / maxDelta) * intensity * 0.2;
+        // Деформация в направлении от курсора (ограниченная)
+        const stretchX = Math.min(1.15, 1 + (Math.abs(rawDeltaX) / maxDelta) * intensity * 0.1);
+        const stretchY = Math.min(1.15, 1 + (Math.abs(rawDeltaY) / maxDelta) * intensity * 0.1);
         
-        // Наклон в направлении от курсора
-        const skewX = -(rawDeltaX / maxDelta) * intensity * 8;
-        const skewY = -(rawDeltaY / maxDelta) * intensity * 8;
+        // Наклон в направлении от курсора (ограниченный)
+        const skewX = Math.max(-3, Math.min(3, -(rawDeltaX / maxDelta) * intensity * 4));
+        const skewY = Math.max(-3, Math.min(3, -(rawDeltaY / maxDelta) * intensity * 4));
         
-        // 3D поворот для объёма
-        const rotateX = (rawDeltaY / maxDelta) * intensity * 15;
-        const rotateY = -(rawDeltaX / maxDelta) * intensity * 15;
+        // 3D поворот для объёма (ограниченный)
+        const rotateX = Math.max(-8, Math.min(8, (rawDeltaY / maxDelta) * intensity * 8));
+        const rotateY = Math.max(-8, Math.min(8, -(rawDeltaX / maxDelta) * intensity * 8));
         
         setDeformation({
           scaleX: stretchX,

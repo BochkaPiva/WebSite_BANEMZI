@@ -10,10 +10,16 @@ export default function DreamEvent() {
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; timestamp: number; vx: number; vy: number }>>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const particleIdRef = useRef(0);
+  const lastMouseMoveRef = useRef(0);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!containerRef.current) return;
+      
+      // Throttling для лучшей совместимости с браузерами
+      const now = Date.now();
+      if (now - lastMouseMoveRef.current < 50) return; // 20fps для частиц
+      lastMouseMoveRef.current = now;
       
       const rect = containerRef.current.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -21,23 +27,28 @@ export default function DreamEvent() {
       
       setMousePosition({ x, y });
 
-      // Создаем частицы при движении мыши
+      // Создаем частицы при движении мыши (уменьшенное количество)
       const newParticle = {
         id: particleIdRef.current++,
         x,
         y,
         timestamp: Date.now(),
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: (Math.random() - 0.5) * 1.5
       };
       
-      setParticles(prev => [...prev.slice(-15), newParticle]);
+      setParticles(prev => [...prev.slice(-10), newParticle]); // Уменьшили с 15 до 10
     };
 
     const container = containerRef.current;
     if (container) {
-      container.addEventListener('mousemove', handleMouseMove);
-      return () => container.removeEventListener('mousemove', handleMouseMove);
+      // Проверяем поддержку requestAnimationFrame для лучшей совместимости
+      const throttledMouseMove = (e: MouseEvent) => {
+        requestAnimationFrame(() => handleMouseMove(e));
+      };
+      
+      container.addEventListener('mousemove', throttledMouseMove, { passive: true });
+      return () => container.removeEventListener('mousemove', throttledMouseMove);
     }
   }, []);
 
