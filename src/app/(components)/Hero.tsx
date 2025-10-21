@@ -9,11 +9,13 @@ import ParallaxElement from './ParallaxElement';
 export default function Hero() {
   const [isLoading, setIsLoading] = useState(true);
   const [videoError, setVideoError] = useState(false);
+  const [slowConnection, setSlowConnection] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000); // Показываем загрузку максимум 3 секунды
+      setSlowConnection(true);
+    }, 5000); // Увеличиваем время загрузки для медленного интернета
 
     return () => clearTimeout(timer);
   }, []);
@@ -89,6 +91,19 @@ export default function Hero() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
             <p className="text-lg">Загрузка...</p>
           </div>
+        </div>
+      )}
+      
+      {/* Уведомление о медленном соединении */}
+      {slowConnection && (
+        <div className="absolute top-4 right-4 bg-orange-500 text-white p-4 rounded-lg max-w-sm z-50">
+          <p className="font-bold mb-2">Медленное соединение?</p>
+          <p className="text-sm mb-2">Попробуйте:</p>
+          <ul className="text-xs space-y-1">
+            <li>• Очистить кэш браузера</li>
+            <li>• Использовать VPN</li>
+            <li>• Перейти на <a href="/ru" className="underline">альтернативную страницу</a></li>
+          </ul>
         </div>
       )}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-6" style={{ minHeight: '400px' }}>
