@@ -1,9 +1,0 @@
-User-agent: *
-Allow: /
-
-# Альтернативные домены для российских пользователей
-# Если основной домен недоступен, используйте:
-# banemzi.vercel.app
-# banemzi-git-master-bochkapivas-projects.vercel.app
-
-Sitemap: https://banemzi.ru/sitemap.xml
