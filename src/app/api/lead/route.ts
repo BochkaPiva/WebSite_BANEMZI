@@ -128,7 +128,7 @@ async function notifyTelegram(data: Record<string, unknown>) {
     });
     
     if (!botToken || !chatId) {
-      console.error('Telegram credentials not configured');
+      console.log('Telegram credentials not configured - skipping notification');
       return;
     }
 
@@ -198,7 +198,7 @@ async function copyToGoogleSheet(data: Record<string, unknown>) {
     const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
     
     if (!spreadsheetId || !serviceAccountJson) {
-      console.error('Google Sheets credentials not configured');
+      console.log('Google Sheets credentials not configured - skipping sheet update');
       return;
     }
     const { google } = await import('googleapis');
@@ -304,20 +304,25 @@ export async function POST(req: NextRequest) {
     }
     
     // Send notifications (parallel with individual error handling)
-    const results = await Promise.allSettled([
-      notifyTelegram(data),
-      copyToGoogleSheet(data)
-    ]);
-    
-    // Log results
-    results.forEach((result, index) => {
-      const service = index === 0 ? 'Telegram' : 'Google Sheets';
-      if (result.status === 'fulfilled') {
-        console.log(`${service} notification: SUCCESS`);
-      } else {
-        console.error(`${service} notification: FAILED`, result.reason);
-      }
-    });
+    try {
+      const results = await Promise.allSettled([
+        notifyTelegram(data),
+        copyToGoogleSheet(data)
+      ]);
+      
+      // Log results
+      results.forEach((result, index) => {
+        const service = index === 0 ? 'Telegram' : 'Google Sheets';
+        if (result.status === 'fulfilled') {
+          console.log(`${service} notification: SUCCESS`);
+        } else {
+          console.log(`${service} notification: SKIPPED (credentials not configured)`);
+        }
+      });
+    } catch (error) {
+      console.log('Notification services not available:', error);
+      // Continue even if notifications fail
+    }
     
     return NextResponse.json({ success: true });
     
