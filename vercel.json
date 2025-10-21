@@ -41,6 +41,6 @@
       ]
     }
   ],
-  "regions": ["iad1"],
+  "regions": ["fra1"],
   "framework": "nextjs"
 }
