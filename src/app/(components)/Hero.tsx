@@ -1,11 +1,23 @@
 "use client";
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import Reveal from './Reveal';
 import MagneticButton from './MagneticButton';
 import InteractiveLogo from './InteractiveLogo';
 import ParallaxElement from './ParallaxElement';
 
 export default function Hero() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [videoError, setVideoError] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000); // Показываем загрузку максимум 3 секунды
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section className="relative overflow-hidden mt-[-64px] pt-[64px] pb-0 min-h-screen flex items-end hero-section" style={{ minHeight: '100vh !important', height: '100vh !important', maxHeight: '100vh !important' }}>
       {/* Видео‑фон с параллаксом */}
@@ -20,12 +32,40 @@ export default function Hero() {
             playsInline
             controls={false}
             suppressHydrationWarning
+            onError={(e) => {
+              console.warn('Video failed to load, using fallback');
+              setVideoError(true);
+              e.currentTarget.style.display = 'none';
+            }}
+            onLoadedData={() => {
+              setIsLoading(false);
+            }}
             style={{ 
               height: '100vh !important', 
               minHeight: '100vh !important', 
               objectPosition: 'center bottom',
               pointerEvents: 'none',
               zIndex: -1
+            }}
+          />
+          {/* Fallback изображение */}
+          <img 
+            src="/ex1.jpeg" 
+            alt="Hero background" 
+            className="absolute top-0 left-0 w-full h-full object-cover"
+            style={{ 
+              height: '100vh !important', 
+              minHeight: '100vh !important', 
+              objectPosition: 'center bottom',
+              pointerEvents: 'none',
+              zIndex: -2,
+              display: 'none'
+            }}
+            onLoad={(e) => {
+              const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
+              if (video && video.readyState < 3) {
+                e.currentTarget.style.display = 'block';
+              }
             }}
           />
           {/* Накладываем невидимый слой поверх видео для блокировки контролов */}
@@ -41,6 +81,16 @@ export default function Hero() {
       </ParallaxElement>
       {/* Затемнение для читаемости */}
       <div className="absolute inset-0 -z-10 bg-black/45" />
+      
+      {/* Индикатор загрузки */}
+      {isLoading && (
+        <div className="absolute inset-0 -z-5 flex items-center justify-center bg-black/60">
+          <div className="text-white text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-lg">Загрузка...</p>
+          </div>
+        </div>
+      )}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-6" style={{ minHeight: '400px' }}>
         {/* Интерактивный логотип с параллаксом и скролл-анимацией */}
         <ParallaxElement speed={0.3} direction="up" className="flex justify-center mb-6 sm:mb-8 -mt-10">

@@ -118,6 +118,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://sheets.googleapis.com" />
         <link rel="preconnect" href="https://www.googleapis.com" />
         <link rel="preload" href="/Logo.png" as="image" type="image/png" />
+        <link rel="preload" href="/hero.mp4" as="video" type="video/mp4" />
+        <link rel="preload" href="/ex1.jpeg" as="image" type="image/jpeg" />
+        <link rel="preload" href="/ex2.jpg" as="image" type="image/jpeg" />
+        <link rel="preload" href="/ex3.jpg" as="image" type="image/jpeg" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SmoothScroll />
