@@ -7,8 +7,10 @@ RUN npm ci --only=production
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
+# Устанавливаем ВСЕ зависимости включая devDependencies для сборки
 RUN npm ci
 COPY . .
+# Убираем turbopack из build команды
 RUN npm run build
 
 FROM node:20-alpine AS runner
