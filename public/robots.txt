@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Альтернативные домены
-# Основной: https://banemzi.vercel.app
+# Основной: https://web-site-banemzi.vercel.app
 # Резервный: https://banemzi.ru
 
-Sitemap: https://banemzi.vercel.app/sitemap.xml
+Sitemap: https://web-site-banemzi.vercel.app/sitemap.xml

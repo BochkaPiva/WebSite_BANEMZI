@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "ru_RU",
-    url: "https://banemzi.ru",
+    url: "https://web-site-banemzi.vercel.app",
     title: "BANEMZI - Ивент агентство в Омске | Организация мероприятий",
     description: "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции. Создаем мероприятия, которые запоминаются навсегда.",
     siteName: "BANEMZI",
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     yandex: "a59490e9b6aa01b0",
   },
   alternates: {
-    canonical: "https://banemzi.ru",
+    canonical: "https://web-site-banemzi.vercel.app",
   },
 };
 
@@ -133,8 +133,8 @@ export default function RootLayout({
               "@type": "Organization",
               name: "BANEMZI",
               description: "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции.",
-              url: "https://banemzi.ru",
-              logo: "https://banemzi.ru/Logo.png",
+              url: "https://web-site-banemzi.vercel.app",
+              logo: "https://web-site-banemzi.vercel.app/Logo.png",
               address: {
                 "@type": "PostalAddress",
                 addressLocality: "Омск",
@@ -148,7 +148,7 @@ export default function RootLayout({
                 availableLanguage: "Russian",
               },
               sameAs: [
-                "https://banemzi.ru",
+                "https://web-site-banemzi.vercel.app",
               ],
               serviceArea: {
                 "@type": "GeoCircle",
