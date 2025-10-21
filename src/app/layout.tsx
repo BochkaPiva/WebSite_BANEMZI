@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import SmoothScroll from "./(components)/SmoothScroll";
-import ResourceFallback from "./(components)/ResourceFallback";
 // Hero имеет собственный фон, общий фон не нужен
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -118,14 +117,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://api.telegram.org" />
         <link rel="preconnect" href="https://sheets.googleapis.com" />
         <link rel="preconnect" href="https://www.googleapis.com" />
-        <link rel="preload" href="/Logo.png" as="image" />
-        <link rel="preload" href="/hero.mp4" as="video" />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SmoothScroll />
-        <ResourceFallback />
         {children}
         
         {/* Structured Data */}
