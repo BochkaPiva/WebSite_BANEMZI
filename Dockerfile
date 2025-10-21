@@ -1,36 +1,31 @@
-# Multi-stage build для Railway
-FROM node:20-alpine AS deps
+# Используем официальный Node.js образ для Timeweb
+FROM node:18-alpine
+
+# Устанавливаем рабочую директорию
 WORKDIR /app
-COPY package.json package-lock.json ./
+
+# Копируем package.json и package-lock.json
+COPY package*.json ./
+
+# Устанавливаем зависимости
 RUN npm ci --only=production
 
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package.json package-lock.json ./
-# Устанавливаем ВСЕ зависимости включая devDependencies для сборки
-RUN npm ci
+# Копируем исходный код
 COPY . .
-# Убираем turbopack из build команды
+
+# Собираем приложение для продакшена
 RUN npm run build
 
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV production
+# Создаем пользователя для безопасности
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
 
-# Создаем пользователя
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Копируем собранное приложение
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-
-# Меняем владельца
+# Меняем владельца файлов
 RUN chown -R nextjs:nodejs /app
 USER nextjs
 
+# Открываем порт
 EXPOSE 3000
-ENV PORT 3000
 
-CMD ["node", "server.js"]
+# Запускаем приложение
+CMD ["npm", "start"]
