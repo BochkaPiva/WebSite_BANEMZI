@@ -67,8 +67,5 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "installCommand": "npm ci",
-  "devCommand": "npm run dev",
-  "env": {
-    "VERCEL_CDN": "false"
-  }
+  "devCommand": "npm run dev"
 }
