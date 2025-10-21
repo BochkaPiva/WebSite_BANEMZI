@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
-  // Отключаем оптимизации для российских пользователей
+  // Оптимизации для Timeweb
+  output: 'standalone',
   experimental: {
     optimizeCss: false,
   },
