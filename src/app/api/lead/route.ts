@@ -35,7 +35,7 @@ const leadSchema = z.object({
     .object({ type: z.enum(['asap', 'slot']), atUtc: z.string().datetime().optional() })
     .refine((v) => (v.type === 'slot' ? Boolean(v.atUtc) : true), 'slot time required'),
   utm: z.string().optional(),
-  recaptchaToken: z.string().nullable().optional(),
+  recaptchaToken: z.string().optional(),
 });
 
 const BAD_DOMAIN_PARTS = ['fuck','sex','porn','huy','hui','xuy','pizd','pidor','ebal','suka','govn','derm'];
@@ -128,7 +128,7 @@ async function notifyTelegram(data: Record<string, unknown>) {
     });
     
     if (!botToken || !chatId) {
-      console.log('Telegram credentials not configured - skipping notification');
+      console.error('Telegram credentials not configured');
       return;
     }
 
@@ -198,7 +198,7 @@ async function copyToGoogleSheet(data: Record<string, unknown>) {
     const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
     
     if (!spreadsheetId || !serviceAccountJson) {
-      console.log('Google Sheets credentials not configured - skipping sheet update');
+      console.error('Google Sheets credentials not configured');
       return;
     }
     const { google } = await import('googleapis');
@@ -304,25 +304,20 @@ export async function POST(req: NextRequest) {
     }
     
     // Send notifications (parallel with individual error handling)
-    try {
-      const results = await Promise.allSettled([
-        notifyTelegram(data),
-        copyToGoogleSheet(data)
-      ]);
-      
-      // Log results
-      results.forEach((result, index) => {
-        const service = index === 0 ? 'Telegram' : 'Google Sheets';
-        if (result.status === 'fulfilled') {
-          console.log(`${service} notification: SUCCESS`);
-        } else {
-          console.log(`${service} notification: SKIPPED (credentials not configured)`);
-        }
-      });
-    } catch (error) {
-      console.log('Notification services not available:', error);
-      // Continue even if notifications fail
-    }
+    const results = await Promise.allSettled([
+      notifyTelegram(data),
+      copyToGoogleSheet(data)
+    ]);
+    
+    // Log results
+    results.forEach((result, index) => {
+      const service = index === 0 ? 'Telegram' : 'Google Sheets';
+      if (result.status === 'fulfilled') {
+        console.log(`${service} notification: SUCCESS`);
+      } else {
+        console.error(`${service} notification: FAILED`, result.reason);
+      }
+    });
     
     return NextResponse.json({ success: true });
     

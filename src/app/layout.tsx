@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "ru_RU",
-    url: "https://web-site-banemzi.vercel.app",
+    url: "https://banemzi.ru",
     title: "BANEMZI - Ивент агентство в Омске | Организация мероприятий",
     description: "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции. Создаем мероприятия, которые запоминаются навсегда.",
     siteName: "BANEMZI",
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     yandex: "a59490e9b6aa01b0",
   },
   alternates: {
-    canonical: "https://web-site-banemzi.vercel.app",
+    canonical: "https://banemzi.ru",
   },
 };
 
@@ -112,13 +112,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.gstatic.com" />
         <link rel="preconnect" href="https://www.google.com" />
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="//www.gstatic.com" />
         <link rel="preconnect" href="https://api.telegram.org" />
         <link rel="preconnect" href="https://sheets.googleapis.com" />
         <link rel="preconnect" href="https://www.googleapis.com" />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        <link rel="preload" href="/Logo.png" as="image" type="image/png" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SmoothScroll />
@@ -133,8 +130,8 @@ export default function RootLayout({
               "@type": "Organization",
               name: "BANEMZI",
               description: "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции.",
-              url: "https://web-site-banemzi.vercel.app",
-              logo: "https://web-site-banemzi.vercel.app/Logo.png",
+              url: "https://banemzi.ru",
+              logo: "https://banemzi.ru/Logo.png",
               address: {
                 "@type": "PostalAddress",
                 addressLocality: "Омск",
@@ -148,7 +145,7 @@ export default function RootLayout({
                 availableLanguage: "Russian",
               },
               sameAs: [
-                "https://web-site-banemzi.vercel.app",
+                "https://banemzi.ru",
               ],
               serviceArea: {
                 "@type": "GeoCircle",

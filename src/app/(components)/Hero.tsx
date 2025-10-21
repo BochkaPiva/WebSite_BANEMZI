@@ -6,7 +6,6 @@ import InteractiveLogo from './InteractiveLogo';
 import ParallaxElement from './ParallaxElement';
 
 export default function Hero() {
-
   return (
     <section className="relative overflow-hidden mt-[-64px] pt-[64px] pb-0 min-h-screen flex items-end hero-section" style={{ minHeight: '100vh !important', height: '100vh !important', maxHeight: '100vh !important' }}>
       {/* Видео‑фон с параллаксом */}
@@ -21,36 +20,12 @@ export default function Hero() {
             playsInline
             controls={false}
             suppressHydrationWarning
-            onError={(e) => {
-              console.warn('Video failed to load, using fallback');
-              e.currentTarget.style.display = 'none';
-            }}
             style={{ 
               height: '100vh !important', 
               minHeight: '100vh !important', 
               objectPosition: 'center bottom',
               pointerEvents: 'none',
               zIndex: -1
-            }}
-          />
-          {/* Fallback изображение */}
-          <img 
-            src="/ex1.jpeg" 
-            alt="Hero background" 
-            className="absolute top-0 left-0 w-full h-full object-cover"
-            style={{ 
-              height: '100vh !important', 
-              minHeight: '100vh !important', 
-              objectPosition: 'center bottom',
-              pointerEvents: 'none',
-              zIndex: -2,
-              display: 'none'
-            }}
-            onLoad={(e) => {
-              const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
-              if (video && video.readyState < 3) {
-                e.currentTarget.style.display = 'block';
-              }
             }}
           />
           {/* Накладываем невидимый слой поверх видео для блокировки контролов */}
@@ -66,7 +41,6 @@ export default function Hero() {
       </ParallaxElement>
       {/* Затемнение для читаемости */}
       <div className="absolute inset-0 -z-10 bg-black/45" />
-      
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-6" style={{ minHeight: '400px' }}>
         {/* Интерактивный логотип с параллаксом и скролл-анимацией */}
         <ParallaxElement speed={0.3} direction="up" className="flex justify-center mb-6 sm:mb-8 -mt-10">
