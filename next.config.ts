@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
+  // Отключаем оптимизации для российских пользователей
+  experimental: {
+    optimizeCss: false,
+  },
   // Ensure CSS and static files are properly served
   async headers() {
     return [
