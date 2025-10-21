@@ -95,8 +95,13 @@ export default function LeadForm() {
         return;
       }
       let recaptchaToken: string | null = null;
-      if ((window as any).grecaptcha && process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
-        recaptchaToken = await (window as any).grecaptcha.execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY, { action: 'submit' });
+      try {
+        if ((window as any).grecaptcha && process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
+          recaptchaToken = await (window as any).grecaptcha.execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY, { action: 'submit' });
+        }
+      } catch (error) {
+        console.warn('reCAPTCHA error:', error);
+        // Continue without reCAPTCHA if it fails
       }
       const cityOk = RU_CITIES.includes(step2.city.trim());
       const res = await fetch('/api/lead', {

@@ -112,6 +112,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.gstatic.com" />
         <link rel="preconnect" href="https://www.google.com" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//www.gstatic.com" />
         <link rel="preconnect" href="https://api.telegram.org" />
         <link rel="preconnect" href="https://sheets.googleapis.com" />
         <link rel="preconnect" href="https://www.googleapis.com" />

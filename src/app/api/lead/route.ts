@@ -35,7 +35,7 @@ const leadSchema = z.object({
     .object({ type: z.enum(['asap', 'slot']), atUtc: z.string().datetime().optional() })
     .refine((v) => (v.type === 'slot' ? Boolean(v.atUtc) : true), 'slot time required'),
   utm: z.string().optional(),
-  recaptchaToken: z.string().optional(),
+  recaptchaToken: z.string().nullable().optional(),
 });
 
 const BAD_DOMAIN_PARTS = ['fuck','sex','porn','huy','hui','xuy','pizd','pidor','ebal','suka','govn','derm'];
