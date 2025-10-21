@@ -14,3 +14,4 @@ docker-compose -f .timeweb.yml up -d
 
 echo "✅ Деплой завершен!"
 echo "🌐 Сайт доступен по адресу: https://banemzi.ru"
+
