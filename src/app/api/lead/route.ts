@@ -268,6 +268,7 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    console.log('=== LEAD API DEBUG ===');
     console.log('Received data:', JSON.stringify(body, null, 2));
     console.log('Environment check:', {
       hasBotToken: !!process.env.TELEGRAM_BOT_TOKEN,
@@ -277,18 +278,40 @@ export async function POST(req: NextRequest) {
     });
     
     // Validate city
+    console.log('City validation:', {
+      providedCity: body.city,
+      cityInList: RU_CITIES.includes(body.city),
+      cityTrimmed: body.city?.trim(),
+      cityTrimmedInList: RU_CITIES.includes(body.city?.trim())
+    });
+    
     if (!RU_CITIES.includes(body.city)) {
+      console.log('City validation failed:', body.city);
       return NextResponse.json(
-        { error: 'INVALID_CITY' },
+        { error: 'INVALID_CITY', details: `City "${body.city}" not found in allowed cities` },
         { status: 400 }
       );
     }
     
     // Parse and validate data
+    console.log('Parsing data with schema...');
     const data = leadSchema.parse(body);
+    console.log('Schema validation passed:', {
+      eventType: data.eventType,
+      city: data.city,
+      guestsBucket: data.guestsBucket,
+      contact: data.contact,
+      callback: data.callback
+    });
     
     // Verify reCAPTCHA
+    console.log('reCAPTCHA validation:', {
+      hasToken: !!data.recaptchaToken,
+      tokenValue: data.recaptchaToken ? data.recaptchaToken.substring(0, 10) + '...' : null
+    });
+    
     if (data.recaptchaToken && !(await verifyRecaptcha(data.recaptchaToken))) {
+      console.log('reCAPTCHA validation failed');
       return NextResponse.json(
         { error: 'RECAPTCHA_FAILED' },
         { status: 400 }
@@ -296,7 +319,14 @@ export async function POST(req: NextRequest) {
     }
     
     // Verify email domain
+    console.log('Email domain validation:', {
+      contactKind: data.contact.kind,
+      contactValue: data.contact.value,
+      isEmail: data.contact.kind === 'email'
+    });
+    
     if (!(await verifyEmailMxIfNeeded(data.contact))) {
+      console.log('Email domain validation failed');
       return NextResponse.json(
         { error: 'INVALID_EMAIL_DOMAIN' },
         { status: 400 }
@@ -319,20 +349,26 @@ export async function POST(req: NextRequest) {
       }
     });
     
+    console.log('=== LEAD API SUCCESS ===');
     return NextResponse.json({ success: true });
     
   } catch (error) {
-    console.error('Lead submission error:', error);
+    console.error('=== LEAD API ERROR ===');
+    console.error('Error type:', error?.constructor?.name);
+    console.error('Error message:', error?.message);
+    console.error('Full error:', error);
     
     if (error instanceof z.ZodError) {
+      console.error('Zod validation errors:', error.issues);
       return NextResponse.json(
         { error: 'VALIDATION_ERROR', details: error.issues },
         { status: 400 }
       );
     }
     
+    console.error('=== LEAD API ERROR END ===');
     return NextResponse.json(
-      { error: 'INTERNAL_ERROR' },
+      { error: 'INTERNAL_ERROR', message: error?.message || 'Unknown error' },
       { status: 500 }
     );
   }

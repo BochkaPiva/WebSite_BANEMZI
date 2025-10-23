@@ -94,11 +94,35 @@ export default function LeadForm() {
         setMessage('Поставьте галочку согласия на обработку данных.');
         return;
       }
+      
+      console.log('Form data before submit:', {
+        eventType: step1.eventType,
+        city: step2.city,
+        cityTrimmed: step2.city.trim(),
+        cityInList: RU_CITIES.includes(step2.city.trim()),
+        guestsBucket: step2.guestsBucket,
+        contact: contact,
+        callback: callback,
+        consent: consent
+      });
+      
       let recaptchaToken: string | null = null;
       if ((window as any).grecaptcha && process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
         recaptchaToken = await (window as any).grecaptcha.execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY, { action: 'submit' });
       }
       const cityOk = RU_CITIES.includes(step2.city.trim());
+      
+      console.log('Sending request to API with data:', {
+        eventType: step1.eventType,
+        city: cityOk ? step2.city.trim() : '',
+        guestsBucket: step2.guestsBucket,
+        contact,
+        callback,
+        recaptchaToken: recaptchaToken ? 'present' : 'missing',
+        utm: typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('utm_source') || '' : '',
+        consentAccepted: true,
+      });
+      
       const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -115,8 +139,26 @@ export default function LeadForm() {
       });
       let json: any = {};
       try { json = await res.json(); } catch {}
+      
+      console.log('Form submission response:', {
+        status: res.status,
+        ok: res.ok,
+        json: json
+      });
+      
       if (!res.ok || !json.success) {
-        setMessage('Проверьте контакт и город. Если не поможет — попробуйте ещё раз.');
+        // Показываем более конкретное сообщение об ошибке
+        if (json.error === 'INVALID_CITY') {
+          setMessage('Выберите город из списка предложенных вариантов.');
+        } else if (json.error === 'VALIDATION_ERROR') {
+          setMessage('Проверьте правильность заполнения всех полей.');
+        } else if (json.error === 'INVALID_EMAIL_DOMAIN') {
+          setMessage('Проверьте правильность email адреса.');
+        } else if (json.error === 'RECAPTCHA_FAILED') {
+          setMessage('Ошибка проверки безопасности. Попробуйте ещё раз.');
+        } else {
+          setMessage(`Ошибка: ${json.message || 'Проверьте контакт и город. Если не поможет — попробуйте ещё раз.'}`);
+        }
         return;
       }
       setMessage('✅ Спасибо! Ваша заявка успешно отправлена. Мы свяжемся с вами в ближайшее время.');
