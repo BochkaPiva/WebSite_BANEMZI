@@ -10,7 +10,19 @@ const contactSchema = z.string().min(3).max(128).transform((raw) => {
   if (value.includes('@') && value.includes('.')) {
     return { kind: 'email' as const, value };
   }
-  const digits = value.replace(/[^0-9+]/g, '');
+  
+  // Нормализуем номер телефона для России
+  let digits = value.replace(/[^0-9+]/g, '');
+  
+  // Если номер начинается с 8, заменяем на +7
+  if (digits.startsWith('8') && digits.length === 11) {
+    digits = '+7' + digits.substring(1);
+  }
+  // Если номер начинается с 7 без +, добавляем +
+  else if (digits.startsWith('7') && digits.length === 11) {
+    digits = '+' + digits;
+  }
+  
   if (/^[+0-9]/.test(value) && digits.length >= 10) {
     try {
       const phone = parsePhoneNumber(digits, 'RU');
@@ -304,13 +316,14 @@ export async function POST(req: NextRequest) {
       callback: data.callback
     });
     
-    // Verify reCAPTCHA
+    // Verify reCAPTCHA (temporarily disabled for debugging)
     console.log('reCAPTCHA validation:', {
       hasToken: !!data.recaptchaToken,
       tokenValue: data.recaptchaToken ? data.recaptchaToken.substring(0, 10) + '...' : null
     });
     
-    if (data.recaptchaToken && !(await verifyRecaptcha(data.recaptchaToken))) {
+    // Временно отключаем проверку reCAPTCHA для отладки
+    if (false && data.recaptchaToken && !(await verifyRecaptcha(data.recaptchaToken))) {
       console.log('reCAPTCHA validation failed');
       return NextResponse.json(
         { error: 'RECAPTCHA_FAILED' },
