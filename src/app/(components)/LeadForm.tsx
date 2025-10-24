@@ -162,19 +162,14 @@ export default function LeadForm() {
         
         {/* Основной контейнер формы */}
         <motion.div 
-          className="relative p-6 sm:p-8 md:p-12 rounded-3xl bg-gradient-to-br from-gray-800/40 via-gray-700/20 to-gray-800/40 border-2 border-orange-400/20 backdrop-blur-sm shadow-2xl text-white"
-          style={{ 
-            minHeight: 'auto',
-            maxHeight: 'calc(100vh - 2rem)',
-            overflowY: 'auto'
-          }}
+          className="relative p-4 sm:p-6 md:p-8 lg:p-12 rounded-3xl bg-gradient-to-br from-gray-800/40 via-gray-700/20 to-gray-800/40 border-2 border-orange-400/20 backdrop-blur-sm shadow-2xl text-white max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-2rem)] overflow-y-auto"
           initial={{ opacity: 0, y: 30, rotate: -1 }}
           animate={{ opacity: 1, y: 0, rotate: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           {/* Заголовок формы */}
           <motion.div 
-            className="text-center mb-6 sm:mb-8"
+            className="text-center mb-4 sm:mb-6 md:mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -187,7 +182,7 @@ export default function LeadForm() {
 
           {step === 1 ? (
             <motion.div 
-              className="space-y-6 sm:space-y-8"
+              className="space-y-4 sm:space-y-6 md:space-y-8"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -215,7 +210,7 @@ export default function LeadForm() {
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
                 <label className="block mb-4 text-lg font-semibold text-white">Тип мероприятия</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                   {[
                     { k: 'corporate', t: 'Корпоративные праздники', icon: '🎉', desc: 'Дни рождения компаний, юбилеи, корпоративы' },
                     { k: 'teambuilding', t: 'Тимбилдинги и квесты', icon: '🤝', desc: 'Сплочение команды через интерактивные активности' },
@@ -227,7 +222,7 @@ export default function LeadForm() {
                       key={opt.k}
                       type="button"
                       onClick={() => setStep1({ eventType: opt.k as any })}
-                      className={`relative p-6 rounded-2xl border-2 transition-all duration-300 group text-left ${
+                      className={`relative p-4 sm:p-6 rounded-2xl border-2 transition-all duration-300 group text-left ${
                         step1.eventType === opt.k 
                           ? 'border-orange-400 bg-gradient-to-br from-orange-500/20 to-orange-600/10 shadow-lg shadow-orange-500/20' 
                           : 'border-gray-600/50 bg-gray-800/30 hover:border-orange-400/50 hover:bg-gray-700/40'
@@ -238,10 +233,10 @@ export default function LeadForm() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
                     >
-                      <div className="flex items-start space-x-3 sm:space-x-4">
-                        <div className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform duration-200 flex-shrink-0">{opt.icon}</div>
+                      <div className="flex items-start space-x-2 sm:space-x-3 md:space-x-4">
+                        <div className="text-xl sm:text-2xl md:text-3xl group-hover:scale-110 transition-transform duration-200 flex-shrink-0">{opt.icon}</div>
                         <div className="flex-1">
-                          <div className="font-semibold text-white text-base sm:text-lg mb-1">{opt.t}</div>
+                          <div className="font-semibold text-white text-sm sm:text-base md:text-lg mb-1">{opt.t}</div>
                           <div className="text-gray-300 text-xs sm:text-sm leading-relaxed">{opt.desc}</div>
                         </div>
                       </div>
@@ -257,7 +252,7 @@ export default function LeadForm() {
 
 
               <motion.div 
-                className="flex justify-end mt-8"
+                className="flex justify-end mt-6 sm:mt-8"
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 1.4 }}
@@ -294,7 +289,7 @@ export default function LeadForm() {
             </motion.div>
           ) : step === 2 ? (
             <motion.div 
-              className="space-y-8"
+              className="space-y-6 sm:space-y-8"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -460,7 +455,7 @@ export default function LeadForm() {
             </motion.div>
           ) : (
             <motion.div 
-              className="space-y-8"
+              className="space-y-6 sm:space-y-8"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
