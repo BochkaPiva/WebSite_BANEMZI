@@ -29,19 +29,19 @@ export const metadata: Metadata = {
   publisher: "BANEMZI",
   icons: {
     icon: [
-      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon.png', sizes: '64x64', type: 'image/png' },
-      { url: '/favicon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/favicon-512.png', sizes: '512x512', type: 'image/png' }
+      { url: '/favicon.png?v=2', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.png?v=2', sizes: '64x64', type: 'image/png' },
+      { url: '/favicon-192.png?v=2', sizes: '192x192', type: 'image/png' },
+      { url: '/favicon-512.png?v=2', sizes: '512x512', type: 'image/png' }
     ],
     apple: [
-      { url: '/favicon-192.png', sizes: '180x180', type: 'image/png' }
+      { url: '/favicon-192.png?v=2', sizes: '180x180', type: 'image/png' }
     ],
-    shortcut: '/favicon.png',
+    shortcut: '/favicon.png?v=2',
     other: [
       {
         rel: 'icon',
-        url: '/favicon.png',
+        url: '/favicon.png?v=2',
         sizes: '32x32',
         type: 'image/png'
       }
@@ -124,7 +124,7 @@ export default function RootLayout({
         {/* Preconnect для критических ресурсов */}
         <link rel="preconnect" href="https://www.gstatic.com" />
         <link rel="preconnect" href="https://www.google.com" />
-        <link rel="preload" href="/favicon.png" as="image" type="image/png" />
+        <link rel="preload" href="/favicon.png?v=2" as="image" type="image/png" />
         {/* Preload критического CSS для ускорения FCP */}
         <link rel="preload" href="/_next/static/css/app/layout.css" as="style" />
       </head>
