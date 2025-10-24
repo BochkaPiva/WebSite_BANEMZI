@@ -146,6 +146,17 @@ export default function LeadForm() {
         json: json
       });
       
+      // Детальный лог ошибки
+      if (!res.ok) {
+        console.error('API Error Details:', {
+          status: res.status,
+          statusText: res.statusText,
+          error: json.error,
+          message: json.message,
+          details: json.details
+        });
+      }
+      
       if (!res.ok || !json.success) {
         // Показываем более конкретное сообщение об ошибке
         if (json.error === 'INVALID_CITY') {
