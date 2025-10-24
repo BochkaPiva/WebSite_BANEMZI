@@ -280,50 +280,19 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log('=== LEAD API DEBUG ===');
-    console.log('Received data:', JSON.stringify(body, null, 2));
-    console.log('Environment check:', {
-      hasBotToken: !!process.env.TELEGRAM_BOT_TOKEN,
-      hasChatId: !!process.env.TELEGRAM_CHAT_ID,
-      hasTopicId: !!process.env.TELEGRAM_TOPIC_ID,
-      topicIdValue: process.env.TELEGRAM_TOPIC_ID
-    });
-    
     // Validate city
-    console.log('City validation:', {
-      providedCity: body.city,
-      cityInList: RU_CITIES.includes(body.city),
-      cityTrimmed: body.city?.trim(),
-      cityTrimmedInList: RU_CITIES.includes(body.city?.trim())
-    });
-    
     if (!RU_CITIES.includes(body.city)) {
-      console.log('City validation failed:', body.city);
       return NextResponse.json(
-        { error: 'INVALID_CITY', details: `City "${body.city}" not found in allowed cities` },
+        { error: 'INVALID_CITY' },
         { status: 400 }
       );
     }
     
     // Parse and validate data
-    console.log('Parsing data with schema...');
     const data = leadSchema.parse(body);
-    console.log('Schema validation passed:', {
-      eventType: data.eventType,
-      city: data.city,
-      guestsBucket: data.guestsBucket,
-      contact: data.contact,
-      callback: data.callback
-    });
     
-    // Verify reCAPTCHA (temporarily disabled for debugging)
-    console.log('reCAPTCHA validation:', {
-      hasToken: !!data.recaptchaToken,
-      tokenValue: data.recaptchaToken ? data.recaptchaToken.substring(0, 10) + '...' : null
-    });
-    
-    // Временно отключаем проверку reCAPTCHA для отладки
-    if (false && data.recaptchaToken && !(await verifyRecaptcha(data.recaptchaToken))) {
+    // Проверяем reCAPTCHA только если токен предоставлен
+    if (data.recaptchaToken && !(await verifyRecaptcha(data.recaptchaToken))) {
       console.log('reCAPTCHA validation failed');
       return NextResponse.json(
         { error: 'RECAPTCHA_FAILED' },
@@ -332,14 +301,7 @@ export async function POST(req: NextRequest) {
     }
     
     // Verify email domain
-    console.log('Email domain validation:', {
-      contactKind: data.contact.kind,
-      contactValue: data.contact.value,
-      isEmail: data.contact.kind === 'email'
-    });
-    
     if (!(await verifyEmailMxIfNeeded(data.contact))) {
-      console.log('Email domain validation failed');
       return NextResponse.json(
         { error: 'INVALID_EMAIL_DOMAIN' },
         { status: 400 }
@@ -362,26 +324,20 @@ export async function POST(req: NextRequest) {
       }
     });
     
-    console.log('=== LEAD API SUCCESS ===');
     return NextResponse.json({ success: true });
     
   } catch (error) {
-    console.error('=== LEAD API ERROR ===');
-    console.error('Error type:', error?.constructor?.name);
-    console.error('Error message:', error?.message);
-    console.error('Full error:', error);
+    console.error('Lead submission error:', error);
     
     if (error instanceof z.ZodError) {
-      console.error('Zod validation errors:', error.issues);
       return NextResponse.json(
         { error: 'VALIDATION_ERROR', details: error.issues },
         { status: 400 }
       );
     }
     
-    console.error('=== LEAD API ERROR END ===');
     return NextResponse.json(
-      { error: 'INTERNAL_ERROR', message: error?.message || 'Unknown error' },
+      { error: 'INTERNAL_ERROR' },
       { status: 500 }
     );
   }
