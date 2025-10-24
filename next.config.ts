@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
     return [
       // Статические ресурсы (изображения, иконки, шрифты) - кеш на 1 год
       {
-        source: '/(.*\\.(png|jpg|jpeg|gif|svg|webp|avif|ico|woff|woff2|ttf|eot))',
+        source: '/:path*\\.(png|jpg|jpeg|gif|svg|webp|avif|ico|woff|woff2|ttf|eot)',
         headers: [
           {
             key: 'Cache-Control',
