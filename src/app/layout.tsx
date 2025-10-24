@@ -9,11 +9,15 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: 'swap', // Оптимизация загрузки шрифтов
+  preload: true, // Предзагрузка шрифтов
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: 'swap', // Оптимизация загрузки шрифтов
+  preload: true, // Предзагрузка шрифтов
 });
 
 export const metadata: Metadata = {
@@ -111,12 +115,19 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
+        {/* DNS prefetch для внешних ресурсов */}
+        <link rel="dns-prefetch" href="https://www.gstatic.com" />
+        <link rel="dns-prefetch" href="https://www.google.com" />
+        <link rel="dns-prefetch" href="https://api.telegram.org" />
+        <link rel="dns-prefetch" href="https://sheets.googleapis.com" />
+        <link rel="dns-prefetch" href="https://www.googleapis.com" />
+        
+        {/* Preconnect для критических ресурсов */}
         <link rel="preconnect" href="https://www.gstatic.com" />
         <link rel="preconnect" href="https://www.google.com" />
-        <link rel="preconnect" href="https://api.telegram.org" />
-        <link rel="preconnect" href="https://sheets.googleapis.com" />
-        <link rel="preconnect" href="https://www.googleapis.com" />
         <link rel="preload" href="/Logo.png" as="image" type="image/png" />
+        {/* Preload критического CSS для ускорения FCP */}
+        <link rel="preload" href="/_next/static/css/app/layout.css" as="style" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SmoothScroll />
