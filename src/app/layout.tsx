@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     siteName: "BANEMZI",
     images: [
       {
-        url: "/Logo.png",
+        url: "/favicon.png",
         width: 1200,
         height: 630,
         alt: "BANEMZI - Ивент агентство в Омске",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "BANEMZI - Ивент агентство в Омске | Организация мероприятий",
     description: "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции. Создаем мероприятия, которые запоминаются навсегда.",
-    images: ["/Logo.png"],
+    images: ["/favicon.png"],
   },
   verification: {
     google: "google188ec728e8b1fa5d",
@@ -100,14 +100,14 @@ export default function RootLayout({
             <link rel="icon" href="/favicon.ico" sizes="any" />
             <link rel="icon" href="/favicon.ico" sizes="16x16" />
             <link rel="icon" href="/favicon.ico" sizes="32x32" />
-            <link rel="icon" href="/Logo.png" type="image/png" sizes="192x192" />
-            <link rel="icon" href="/Logo.png" type="image/png" sizes="512x512" />
-            <link rel="icon" href="/Logo.png" type="image/png" sizes="48x48" />
-            <link rel="icon" href="/Logo.png" type="image/png" sizes="64x64" />
-            <link rel="apple-touch-icon" href="/Logo.png" sizes="180x180" />
+            <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192" />
+            <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
+            <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48" />
+            <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
+            <link rel="apple-touch-icon" href="/favicon.png" sizes="180x180" />
             <link rel="shortcut icon" href="/favicon.ico" />
             <link rel="manifest" href="/manifest.json" />
-            <meta name="msapplication-TileImage" content="/Logo.png" />
+            <meta name="msapplication-TileImage" content="/favicon.png" />
             <meta name="msapplication-TileColor" content="#FF6B00" />
             <meta name="theme-color" content="#FF6B00" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -142,7 +142,7 @@ export default function RootLayout({
               name: "BANEMZI",
               description: "Профессиональная организация мероприятий в Омске. Корпоративы, тимбилдинги, презентации, промо-акции.",
               url: "https://banemzi.ru",
-              logo: "https://banemzi.ru/Logo.png",
+              logo: "https://banemzi.ru/favicon.png",
               address: {
                 "@type": "PostalAddress",
                 addressLocality: "Омск",
