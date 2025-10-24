@@ -155,6 +155,14 @@ export default function LeadForm() {
           message: json.message,
           details: json.details
         });
+        
+        // Показываем детали валидации
+        if (json.details && Array.isArray(json.details)) {
+          console.error('Validation errors:', json.details);
+          json.details.forEach((detail: any, index: number) => {
+            console.error(`Error ${index + 1}:`, detail);
+          });
+        }
       }
       
       if (!res.ok || !json.success) {
