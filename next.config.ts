@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
   // Оптимизации для Vercel
   output: 'standalone',
   experimental: {
-    optimizeCss: true, // Включаем оптимизацию CSS
+    optimizeCss: false, // Отключаем из-за проблем с critters
   },
   // Настройки CDN для Vercel
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
