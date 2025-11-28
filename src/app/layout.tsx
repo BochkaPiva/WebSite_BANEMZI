@@ -150,7 +150,7 @@ export default function RootLayout({
               },
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+7-XXX-XXX-XX-XX",
+                telephone: "+7-983-404-10-73",
                 contactType: "customer service",
                 areaServed: "RU",
                 availableLanguage: "Russian",

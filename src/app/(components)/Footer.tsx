@@ -96,8 +96,8 @@ export default function Footer() {
         </svg>
       ),
       label: 'Телефон',
-      value: '+7 (___) ___‑__‑__',
-      href: 'tel:+7',
+      value: '+7 (983) 404-10-73',
+      href: 'tel:+79834041073',
       color: 'text-orange-400'
     },
     {
